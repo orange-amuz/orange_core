@@ -49,6 +49,8 @@ class _OrangeScaleButtonState extends State<OrangeScaleButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
 
+  late final Animation _animation;
+
   @override
   void initState() {
     super.initState();
@@ -56,9 +58,17 @@ class _OrangeScaleButtonState extends State<OrangeScaleButton>
     _animationController = AnimationController(
       vsync: this,
       duration: widget.animationDuration,
-      lowerBound: widget.minScale,
-      upperBound: widget.maxScale,
     )..addListener(_updateWidget);
+
+    _animation = Tween(
+      begin: widget.maxScale,
+      end: widget.minScale,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: widget.animationCurve,
+      ),
+    );
   }
 
   @override
@@ -96,7 +106,7 @@ class _OrangeScaleButtonState extends State<OrangeScaleButton>
         onTap: widget.onPressed,
         onLongPress: widget.onLongPressed,
         child: Transform.scale(
-          scale: _animationController.value,
+          scale: _animation.value,
           child: widget.child,
         ),
       ),
