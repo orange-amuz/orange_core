@@ -7,3 +7,6 @@ export 'src/orange_animated_widget_viewer.dart';
 export 'src/buttons/orange_button.dart';
 export 'src/buttons/orange_list_button.dart';
 export 'src/buttons/orange_scale_button.dart';
+
+/// 유틸리티들
+export 'src/utilities/screen_util.dart';

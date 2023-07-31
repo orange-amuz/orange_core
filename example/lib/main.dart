@@ -12,6 +12,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      builder: (context, child) {
+        if (!ScreenUtil.isInitialize()) {
+          ScreenUtil.initialize(
+            context,
+            designedHeight: 375,
+            designedWidth: 767,
+          );
+        } else {
+          ScreenUtil.updateScreenValues(context);
+        }
+
+        return child!;
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -35,6 +48,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  void initState() {
+    super.initState();
+
+    // print(ScreenUtil.appHeight);
+    // print(ScreenUtil.appWidth);
+    // print(ScreenUtil.maxWidth);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -52,9 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('scale button'),
             ),
             OrangeScaleButton(
-              margin: const EdgeInsets.only(
-                left: 14,
-                right: 14,
+              margin: EdgeInsets.only(
+                left: ScreenUtil.getWidth(14),
+                right: ScreenUtil.getWidth(14),
               ),
               child: Container(
                 width: double.infinity,
