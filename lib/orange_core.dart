@@ -10,3 +10,4 @@ export 'src/buttons/orange_scale_button.dart';
 
 /// 유틸리티들
 export 'src/utilities/screen_util.dart';
+export 'src/utilities/string_util.dart';
