@@ -64,7 +64,7 @@ class ScreenUtil {
   }
 
   static void _checkInit() {
-    assert(_isInit, 'Do initialize before call another method');
+    assert(_isInit, 'Do initialize before call another method.');
   }
 
   static bool isInitialize() {

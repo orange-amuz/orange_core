@@ -1,3 +1,4 @@
+import 'package:example/pages/animation_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:orange_core/orange_core.dart';
 
@@ -86,7 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text('push me!'),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AnimationTestPage(),
+                  ),
+                );
+              },
             ),
             Container(
               margin: const EdgeInsets.only(
