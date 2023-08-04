@@ -156,7 +156,7 @@ class _AnimationTestPage extends State<AnimationTestPage>
     return _buildCustomTranslateWidget(
       y: -75,
       child: Container(
-        color: Colors.grey[200],
+        color: Colors.white,
       ),
     );
   }
