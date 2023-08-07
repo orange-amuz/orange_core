@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:example/pages/dice_animation_test_page/cube_side.dart';
+import 'package:example/pages/dice_animation_test_page/cube/cube_side.dart';
 import 'package:flutter/material.dart';
 
 class CubeWidget extends StatelessWidget {
