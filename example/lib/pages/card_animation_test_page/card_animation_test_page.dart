@@ -67,6 +67,10 @@ class _CardAnimationTestPage extends State<CardAnimationTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Card Animation Test Page'),
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (_, constraints) {

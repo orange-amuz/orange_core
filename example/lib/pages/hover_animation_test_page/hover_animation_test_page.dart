@@ -145,6 +145,10 @@ class _HoverAnimationTestPage extends State<HoverAnimationTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Hover Animation Test Page'),
+      ),
       backgroundColor: ColorTween(
         begin: Colors.white,
         end: Colors.black87,
@@ -154,7 +158,11 @@ class _HoverAnimationTestPage extends State<HoverAnimationTestPage>
       body: SafeArea(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          child: Center(
+          child: Container(
+            alignment: Alignment.bottomCenter,
+            padding: const EdgeInsets.only(
+              bottom: 100,
+            ),
             child: SizedBox(
               width: boxWidth,
               height: boxHeight,

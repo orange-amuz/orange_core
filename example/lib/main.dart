@@ -1,5 +1,7 @@
 import 'package:example/pages/card_animation_test_page/card_animation_test_page.dart';
+import 'package:example/pages/dice_animation_test_page/dice_animation_test_page.dart';
 import 'package:example/pages/hover_animation_test_page/hover_animation_test_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:orange_core/orange_core.dart';
 
@@ -60,66 +62,116 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              margin: const EdgeInsets.only(
-                bottom: 10,
-              ),
-              child: const Text('Scale Button'),
-            ),
-            OrangeScaleButton(
-              margin: EdgeInsets.only(
-                left: ScreenUtil.getWidth(14),
-                right: ScreenUtil.getWidth(14),
-              ),
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                color: Colors.green,
-                child: const Center(
-                  child: Text('Go To Hover Animation Page'),
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const HoverAnimationTestPage(),
-                  ),
-                );
-              },
-            ),
+            _buildScaleButton(),
             const Divider(),
-            Container(
-              margin: const EdgeInsets.only(
-                top: 20,
-                bottom: 10,
-              ),
-              child: const Text('List Button'),
-            ),
-            OrangeListButton(
-              padding: const EdgeInsets.only(
-                left: 14,
-                right: 14,
-              ),
-              child: const SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: Center(
-                  child: Text('Go To Card Animation Page'),
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const CardAnimationTestPage(),
-                  ),
-                );
-              },
-            ),
+            _buildListButton(),
+            const Divider(),
+            _buildTestPages(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildScaleButton() {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(
+            bottom: 10,
+          ),
+          child: const Text('Scale Button'),
+        ),
+        OrangeScaleButton(
+          margin: EdgeInsets.only(
+            left: ScreenUtil.getWidth(14),
+            right: ScreenUtil.getWidth(14),
+          ),
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            color: Theme.of(context).colorScheme.inversePrimary,
+            child: const Center(
+              child: Text('Push Me!'),
+            ),
+          ),
+          onPressed: () {},
+        )
+      ],
+    );
+  }
+
+  Widget _buildListButton() {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(
+            top: 20,
+            bottom: 10,
+          ),
+          child: const Text('List Button'),
+        ),
+        OrangeListButton(
+          padding: const EdgeInsets.only(
+            left: 14,
+            right: 14,
+          ),
+          child: const SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: Center(
+              child: Text('Push Me!'),
+            ),
+          ),
+          onPressed: () {},
+        )
+      ],
+    );
+  }
+
+  Widget _buildTestPages() {
+    return Column(
+      children: [
+        CupertinoButton(
+          child: const Text(
+            'Go To Hover Animation Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const HoverAnimationTestPage(),
+              ),
+            );
+          },
+        ),
+        CupertinoButton(
+          child: const Text(
+            'Go To Card Animation Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CardAnimationTestPage(),
+              ),
+            );
+          },
+        ),
+        CupertinoButton(
+          child: const Text(
+            'Go To Dice Animation Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const DiceAnimationTestPage(),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
