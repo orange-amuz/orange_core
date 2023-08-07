@@ -1,4 +1,5 @@
-import 'package:example/pages/animation_test_page.dart';
+import 'package:example/pages/card_animation_test_page/card_animation_test_page.dart';
+import 'package:example/pages/hover_animation_test_page/hover_animation_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:orange_core/orange_core.dart';
 
@@ -49,15 +50,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
-  void initState() {
-    super.initState();
-
-    // print(ScreenUtil.appHeight);
-    // print(ScreenUtil.appWidth);
-    // print(ScreenUtil.maxWidth);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -72,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
               margin: const EdgeInsets.only(
                 bottom: 10,
               ),
-              child: const Text('scale button'),
+              child: const Text('Scale Button'),
             ),
             OrangeScaleButton(
               margin: EdgeInsets.only(
@@ -84,24 +76,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 50,
                 color: Colors.green,
                 child: const Center(
-                  child: Text('push me!'),
+                  child: Text('Go To Hover Animation Page'),
                 ),
               ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const AnimationTestPage(),
+                    builder: (_) => const HoverAnimationTestPage(),
                   ),
                 );
               },
             ),
+            const Divider(),
             Container(
               margin: const EdgeInsets.only(
                 top: 20,
                 bottom: 10,
               ),
-              child: const Text('list button'),
+              child: const Text('List Button'),
             ),
             OrangeListButton(
               padding: const EdgeInsets.only(
@@ -112,15 +105,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: double.infinity,
                 height: 50,
                 child: Center(
-                  child: Text('push me!'),
+                  child: Text('Go To Card Animation Page'),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CardAnimationTestPage(),
+                  ),
+                );
+              },
             ),
           ],
         ),
       ),
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
