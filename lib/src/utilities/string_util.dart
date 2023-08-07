@@ -38,4 +38,13 @@ class StringUtil {
 
     return false;
   }
+
+  /// 한글 종성을 판별하는 메서드
+  ///
+  /// [true] : 받침 있음
+  ///
+  /// [false] : 받침 없음
+  bool checkBottomConsonant(String input) {
+    return (input.runes.last - 0xAC00) % 28 != 0;
+  }
 }
