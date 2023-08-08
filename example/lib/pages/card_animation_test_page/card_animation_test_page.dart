@@ -13,9 +13,16 @@ class _CardAnimationTestPage extends State<CardAnimationTestPage>
     with SingleTickerProviderStateMixin {
   bool isForward = false;
 
-  double alignX = 0;
-  double alignY = 0;
-  double rotateAngle = 0;
+  static const cardAngle = math.pi / 12 * 5;
+
+  double xAngle = 0.0;
+  double yAngle = 0.0;
+  double zAngle = 0.0;
+
+  double xAlign = 0;
+  double yAlign = 0;
+
+  // double rotateAngle = 0;
 
   Curve curve = Curves.easeInOut;
 
@@ -64,6 +71,48 @@ class _CardAnimationTestPage extends State<CardAnimationTestPage>
     curve = Curves.bounceOut.flipped;
   }
 
+  void updateValueForward({
+    required BoxConstraints constraints,
+    required double x,
+    required double y,
+  }) {
+    final center = Offset(
+      constraints.maxWidth / 2,
+      constraints.maxHeight / 2,
+    );
+
+    final relativeOffset = Offset(
+      x - center.dx,
+      y - center.dy,
+    );
+
+    final dx = relativeOffset.dx;
+    final dy = relativeOffset.dy;
+
+    final angle = -math.atan2(dy, dx) < 0
+        ? -math.atan2(dy, dx) + math.pi * 2
+        : -math.atan2(dy, dx);
+
+    xAlign = -1.4 * math.cos(angle + cardAngle);
+    yAlign = 1.2 * math.sin(angle + cardAngle);
+
+    xAngle = -math.pi / 6 * math.cos(angle + cardAngle);
+    yAngle = math.pi / 6 * math.sin(angle + cardAngle);
+    // zAngle = -math.pi / 6 * math.tan(angle + cardAngle);
+
+    // print('$xAngle, $yAngle');
+
+    curve = Curves.easeInOut;
+
+    animationController.forward();
+  }
+
+  void updateValueReverse() {
+    curve = Curves.bounceOut.flipped;
+
+    animationController.reverse();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,41 +125,52 @@ class _CardAnimationTestPage extends State<CardAnimationTestPage>
           builder: (_, constraints) {
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTapDown: (details) {
-                // if (details.localPosition.dx > constraints.maxWidth / 2) {
-                //   setTargetLeft();
-                //   animationController.forward();
-                // } else {
-                //   setTargetRight();
-                //   animationController.forward();
-                // }
-
-                setCurveForward();
-                animationController.forward();
+              onPanDown: (details) {
+                updateValueForward(
+                  constraints: constraints,
+                  x: details.localPosition.dx,
+                  y: details.localPosition.dy,
+                );
               },
-              onTapUp: (details) {
-                setCurveReverse();
-                animationController.reverse();
+              onPanUpdate: (details) {
+                setState(() {
+                  updateValueForward(
+                    constraints: constraints,
+                    x: details.localPosition.dx,
+                    y: details.localPosition.dy,
+                  );
+                });
               },
-              onTapCancel: () {
-                setCurveReverse();
-                animationController.reverse();
+              onPanCancel: () {
+                updateValueReverse();
+              },
+              onPanEnd: (details) {
+                updateValueReverse();
               },
               child: Center(
                 child: Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()
-                    ..rotateY(
+                    ..setEntry(3, 2, 0.0015)
+                    ..rotateX(
                       Tween(
                         begin: 0.0,
-                        end: math.pi / 6,
+                        end: -xAngle,
                       )
                           .chain(CurveTween(curve: curve))
                           .evaluate(animationController)
                           .toDouble(),
+                    )
+                    ..rotateY(
+                      Tween(
+                        begin: 0.0,
+                        end: -yAngle,
+                      )
+                          .chain(CurveTween(curve: curve))
+                          .evaluate(animationController),
                     ),
                   child: Transform.rotate(
-                    angle: math.pi / 12 * 5,
+                    angle: cardAngle,
                     child: Container(
                       width: 300,
                       height: 200,
@@ -121,21 +181,39 @@ class _CardAnimationTestPage extends State<CardAnimationTestPage>
                               .chain(CurveTween(curve: Curves.easeInOut))
                               .evaluate(animationController)
                               .toDouble(),
-                          colors: const [Colors.white, Colors.red],
-                          stops: const [0, 1],
+                          colors: [
+                            Colors.red.shade100,
+                            Colors.red.shade200,
+                            Colors.red,
+                            Colors.red.shade800,
+                            Colors.red.shade900,
+                          ],
+                          stops: const [
+                            0,
+                            0.15,
+                            0.5,
+                            0.85,
+                            1.0,
+                          ],
                           center: Alignment(
-                            Tween(begin: 1.0, end: -1.0)
-                                    .chain(CurveTween(curve: curve))
-                                    .evaluate(animationController)
-                                    .toDouble() *
-                                math.cos(math.pi / 6),
-                            Tween(begin: -2.0, end: 2.0)
-                                    .chain(CurveTween(curve: curve))
-                                    .evaluate(animationController)
-                                    .toDouble() *
-                                math.cos(math.pi / 6),
+                            Tween(begin: 0, end: xAlign)
+                                .chain(CurveTween(curve: curve))
+                                .evaluate(animationController)
+                                .toDouble(),
+                            Tween(begin: 0, end: yAlign)
+                                .chain(CurveTween(curve: curve))
+                                .evaluate(animationController)
+                                .toDouble(),
                           ),
                         ),
+                        boxShadow: const [
+                          BoxShadow(
+                            offset: Offset(0, 0),
+                            color: Colors.black,
+                            blurRadius: 0.5,
+                            spreadRadius: 0.5,
+                          ),
+                        ],
                       ),
                       child: Stack(
                         children: [
@@ -146,11 +224,45 @@ class _CardAnimationTestPage extends State<CardAnimationTestPage>
                             child: Container(
                               alignment: Alignment.centerLeft,
                               child: Container(
-                                width: 30,
-                                height: 25,
+                                width: 35,
+                                height: 30,
                                 decoration: BoxDecoration(
-                                  color: Colors.yellow[700],
                                   borderRadius: BorderRadius.circular(5),
+                                  // gradient: RadialGradient(
+                                  //   radius: Tween(begin: 1.5, end: 1.5)
+                                  //       .chain(
+                                  //           CurveTween(curve: Curves.easeInOut))
+                                  //       .evaluate(animationController)
+                                  //       .toDouble(),
+                                  //   colors: [
+                                  //     Colors.yellow.shade100,
+                                  //     Colors.yellow.shade200,
+                                  //     Colors.yellow,
+                                  //     Colors.yellow.shade800,
+                                  //     Colors.yellow.shade900,
+                                  //   ],
+                                  //   stops: const [
+                                  //     0,
+                                  //     0.15,
+                                  //     0.5,
+                                  //     0.85,
+                                  //     1.0,
+                                  //   ],
+                                  //   center: Alignment(
+                                  //     Tween(
+                                  //       begin: -(35 / 2 + 95) / 300,
+                                  //       end: xAlign + -(35 / 2 + 95) / 300,
+                                  //     )
+                                  //         .chain(CurveTween(curve: curve))
+                                  //         .evaluate(animationController)
+                                  //         .toDouble(),
+                                  //     Tween(begin: 0, end: yAlign)
+                                  //         .chain(CurveTween(curve: curve))
+                                  //         .evaluate(animationController)
+                                  //         .toDouble(),
+                                  //   ),
+                                  // ),
+                                  color: Colors.yellow.shade800,
                                 ),
                               ),
                             ),

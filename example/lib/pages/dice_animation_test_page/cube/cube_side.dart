@@ -33,7 +33,7 @@ class CubeSide extends StatelessWidget {
         ..setEntry(
           3,
           2,
-          0.001,
+          0.0015,
         ),
       child: Transform(
         alignment: Alignment.center,
@@ -49,7 +49,7 @@ class CubeSide extends StatelessWidget {
           ),
           color: diceColor,
           foregroundDecoration: BoxDecoration(
-            color: Colors.black.withOpacity(shadow.clamp(0.0, 1.0)),
+            // color: Colors.black.withOpacity(shadow.clamp(0.0, 1.0)),
             border: Border.all(
               width: 1,
               color: Colors.black26,

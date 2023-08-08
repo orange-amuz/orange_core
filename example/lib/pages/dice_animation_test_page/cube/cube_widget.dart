@@ -89,7 +89,9 @@ class CubeWidget extends StatelessWidget {
     );
 
     return Stack(
-      children: faces.reversed.toList(),
+      children: [
+        ...faces.reversed.toList(),
+      ],
     );
   }
 }
