@@ -33,9 +33,13 @@ class _DiceAnimationTestPage extends State<DiceAnimationTestPage> {
             );
           },
           child: Center(
-            child: CubeWidget(
-              x: x,
-              y: y,
+            child: Stack(
+              children: [
+                CubeWidget(
+                  x: x,
+                  y: y,
+                ),
+              ],
             ),
           ),
         ),
