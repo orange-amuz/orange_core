@@ -40,6 +40,8 @@ dependencies:
 
   sensors_plus: ^3.0.3
 
+  rxdart: ^0.27.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

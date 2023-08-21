@@ -1,3 +1,4 @@
+import 'package:example/pages/app_bar_animation_test_page/app_bar_animation_test_page.dart';
 import 'package:example/pages/card_animation_test_page/card_animation_test_page.dart';
 import 'package:example/pages/dice_animation_test_page/dice_animation_test_page.dart';
 import 'package:example/pages/hover_animation_test_page/hover_animation_test_page.dart';
@@ -169,6 +170,19 @@ class _MyHomePageState extends State<MyHomePage> {
               context,
               MaterialPageRoute(
                 builder: (_) => const DiceAnimationTestPage(),
+              ),
+            );
+          },
+        ),
+        CupertinoButton(
+          child: const Text(
+            'Go To AppBar Animation Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AppBarAnimationTestPage(),
               ),
             );
           },
