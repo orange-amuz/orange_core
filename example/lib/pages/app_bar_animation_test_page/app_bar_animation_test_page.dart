@@ -131,15 +131,16 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
 
     final double textSize = 15 + (5 * appBarHeightRatio);
 
-    final paddingSize = math.min(
-      maxPaddingSize,
-      (appBarHeight * (maxPaddingSize - minPaddingSize)) /
-          (maxAppBarHeight - minAppBarHeight),
-    );
-
     final opacity = (appBarHeight.clamp(minOpacityHeight, maxAppBarHeight) -
             minOpacityHeight) /
         (maxAppBarHeight - minOpacityHeight);
+
+    final paddingSize =
+        ((appBarHeight.clamp(minAppBarHeight, minOpacityHeight) -
+                        minAppBarHeight) /
+                    (minOpacityHeight - minAppBarHeight)) *
+                (maxPaddingSize - minPaddingSize) +
+            minPaddingSize;
 
     final isMin = (appBarHeight == minAppBarHeight);
 
@@ -183,29 +184,47 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
                 child: Center(
                   child: Opacity(
                     opacity: opacity,
-                    child: SizedBox(
-                      height: 12 * 1.2,
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'MY',
-                              style: TextStyle(
-                                fontSize: 12,
-                                height: 1.2,
-                              ),
-                              textScaleFactor: 1,
+                    child: Builder(
+                      builder: (_) {
+                        const buttonHeight = 12 * 1.2 + 8;
+
+                        return Container(
+                          height: buttonHeight,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(buttonHeight / 2),
+                            color: Colors.black,
+                          ),
+                          child: CupertinoButton(
+                            padding: const EdgeInsets.only(
+                              left: 10,
+                              right: 5,
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 12 * 1.2,
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'MY ',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 12,
+                                    height: 1.2,
+                                  ),
+                                  textScaleFactor: 1,
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.white,
+                                  weight: 700,
+                                  size: 12,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        onPressed: () {},
-                      ),
+                            onPressed: () {},
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
