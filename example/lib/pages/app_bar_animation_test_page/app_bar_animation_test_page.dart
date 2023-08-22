@@ -20,7 +20,7 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
   static const double minPaddingSize = 15;
   static const double maxPaddingSize = 50;
 
-  static const double minOpacityHeight = 100;
+  static const double minOpacityHeight = 150;
 
   final _scrollOffset = BehaviorSubject.seeded(0.0);
   final scrollController = ScrollController();
@@ -110,8 +110,8 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
     return SizedBox(
       width: minAppBarHeight,
       height: minAppBarHeight,
-      child: MaterialButton(
-        child: const Icon(
+      child: IconButton(
+        icon: const Icon(
           Icons.arrow_back,
         ),
         onPressed: () {
