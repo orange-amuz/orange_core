@@ -3,6 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 
+enum MusicPlayerState {
+  expanded,
+  changing,
+  contracted,
+}
+
 class MusicPlayerAnimationTestPage extends StatefulWidget {
   const MusicPlayerAnimationTestPage({Key? key}) : super(key: key);
 
@@ -59,6 +65,8 @@ class _MusicPlayerAnimationTestPageState
     duration: animationDuration,
   );
 
+  MusicPlayerState musicPlayerState = MusicPlayerState.contracted;
+
   @override
   void initState() {
     super.initState();
@@ -104,80 +112,6 @@ class _MusicPlayerAnimationTestPageState
                 final dismissOpacity =
                     (height / minPlayerHeight).clamp(0.0, 1.0);
 
-                void animateToMax() {
-                  if (_bottomSheetHeight.value <= minBottomSheetHeight) {
-                    final animation = Tween(begin: height, end: maxPlayerHeight)
-                        .chain(CurveTween(curve: animationCurve))
-                        .animate(musicPlayerAnimationController);
-
-                    animation.addListener(() {
-                      _playerHeight.sink.add(animation.value);
-                      _bottomSheetHeight.sink.add(
-                        (animation.value - minPlayerHeight) /
-                            (maxPlayerHeight - minPlayerHeight) *
-                            minBottomSheetHeight,
-                      );
-
-                      updateValue(animation.value);
-                    });
-
-                    musicPlayerAnimationController.reset();
-                    musicPlayerAnimationController.forward().then(
-                      (value) {
-                        animation.removeListener(
-                          () {
-                            _playerHeight.sink.add(animation.value);
-                            _bottomSheetHeight.sink.add(
-                              (animation.value - minPlayerHeight) /
-                                  (maxPlayerHeight - minPlayerHeight) *
-                                  minBottomSheetHeight,
-                            );
-
-                            updateValue(animation.value);
-                          },
-                        );
-                      },
-                    );
-                  } else {}
-                }
-
-                void animateToMin() {
-                  if (_bottomSheetHeight.value <= minBottomSheetHeight) {
-                    final animation = Tween(begin: height, end: minPlayerHeight)
-                        .chain(CurveTween(curve: animationCurve))
-                        .animate(musicPlayerAnimationController);
-
-                    animation.addListener(() {
-                      _playerHeight.sink.add(animation.value);
-                      _bottomSheetHeight.sink.add(
-                        (animation.value - minPlayerHeight) /
-                            (maxPlayerHeight - minPlayerHeight) *
-                            minBottomSheetHeight,
-                      );
-
-                      updateValue(animation.value);
-                    });
-
-                    musicPlayerAnimationController.reset();
-                    musicPlayerAnimationController.forward().then(
-                      (value) {
-                        animation.removeListener(
-                          () {
-                            _playerHeight.sink.add(animation.value);
-                            _bottomSheetHeight.sink.add(
-                              (animation.value - minPlayerHeight) /
-                                  (maxPlayerHeight - minPlayerHeight) *
-                                  minBottomSheetHeight,
-                            );
-
-                            updateValue(animation.value);
-                          },
-                        );
-                      },
-                    );
-                  } else {}
-                }
-
                 return Opacity(
                   opacity: dismissOpacity,
                   child: Container(
@@ -186,6 +120,9 @@ class _MusicPlayerAnimationTestPageState
                     color: Colors.black.withOpacity(0.85),
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        musicPlayerAnimateToMax(height);
+                      },
                       onPanStart: (details) {},
                       onPanUpdate: (details) {
                         final dy = details.delta.dy;
@@ -193,24 +130,18 @@ class _MusicPlayerAnimationTestPageState
                         if (dy != 0) {
                           final targetHeight = _playerHeight.value - dy;
 
-                          if (_bottomSheetHeight.value <=
-                              minBottomSheetHeight) {
-                            if (targetHeight > maxPlayerHeight) {
-                              _playerHeight.sink.add(maxPlayerHeight);
-                              _bottomSheetHeight.sink.add(minBottomSheetHeight);
-                            } else {
-                              _playerHeight.sink.add(targetHeight);
+                          if (musicPlayerState == MusicPlayerState.expanded) {
+                            final bottomSheetHeight =
+                                _bottomSheetHeight.value - dy;
 
-                              if (targetHeight >= 0) {
-                                _bottomSheetHeight.sink.add(
-                                  (targetHeight - minPlayerHeight) /
-                                      (maxPlayerHeight - minPlayerHeight) *
-                                      minBottomSheetHeight,
-                                );
-                                updateValue(targetHeight);
-                              }
-                            }
-                          } else {}
+                            if (bottomSheetHeight < minBottomSheetHeight) {
+                              musicPlayerState = MusicPlayerState.changing;
+                            } else {}
+
+                            updateBottomSheetHeight(bottomSheetHeight);
+                          } else {
+                            updateMusicPlayerHeight(targetHeight);
+                          }
                         }
                       },
                       onPanEnd: (details) {
@@ -218,16 +149,37 @@ class _MusicPlayerAnimationTestPageState
 
                         if (dismissOpacity < 0.4) {
                         } else {
-                          if (speed < 0) {
-                            animateToMax();
-                          } else if (speed == 0) {
-                            if (height < maxPlayerHeight / 2) {
-                              animateToMin();
+                          if (musicPlayerState == MusicPlayerState.expanded) {
+                            final bottomSheetHeight = _bottomSheetHeight.value;
+
+                            if (speed < 0) {
+                              bottomSheetAnimateToMax(bottomSheetHeight);
+                            } else if (speed == 0) {
+                              if (bottomSheetHeight <
+                                  maxBottomSheetHeight / 2) {
+                                bottomSheetAnimateToMin(
+                                  bottomSheetHeight,
+                                );
+                              } else {
+                                bottomSheetAnimateToMax(
+                                  bottomSheetHeight,
+                                );
+                              }
                             } else {
-                              animateToMax();
+                              bottomSheetAnimateToMin(bottomSheetHeight);
                             }
                           } else {
-                            animateToMin();
+                            if (speed < 0) {
+                              musicPlayerAnimateToMax(height);
+                            } else if (speed == 0) {
+                              if (height < maxPlayerHeight / 2) {
+                                musicPlayerAnimateToMin(height);
+                              } else {
+                                musicPlayerAnimateToMax(height);
+                              }
+                            } else {
+                              musicPlayerAnimateToMin(height);
+                            }
                           }
                         }
                       },
@@ -277,7 +229,11 @@ class _MusicPlayerAnimationTestPageState
 
                                         return Opacity(
                                           opacity: backgroundOpacity,
-                                          child: _buildPlayerAppBarArea(),
+                                          child: _buildPlayerAppBarArea(
+                                            onPressedAnimateToMin: () {
+                                              musicPlayerAnimateToMin(height);
+                                            },
+                                          ),
                                         );
                                       },
                                     ),
@@ -372,96 +328,6 @@ class _MusicPlayerAnimationTestPageState
                   1.0,
                 );
 
-                void animateToMax() {
-                  final animation =
-                      Tween(begin: height, end: maxBottomSheetHeight)
-                          .chain(CurveTween(curve: animationCurve))
-                          .animate(bottomSheetAnimationController);
-
-                  animation.addListener(() {
-                    _bottomSheetHeight.sink.add(
-                      animation.value,
-                    );
-
-                    updateValue(
-                      (1 -
-                                  ((animation.value - minBottomSheetHeight) /
-                                      (maxBottomSheetHeight -
-                                          minBottomSheetHeight))) *
-                              (maxPlayerHeight - minPlayerHeight) +
-                          minPlayerHeight,
-                    );
-                  });
-
-                  bottomSheetAnimationController.reset();
-                  bottomSheetAnimationController.forward().then(
-                    (value) {
-                      animation.removeListener(
-                        () {
-                          _bottomSheetHeight.sink.add(
-                            animation.value,
-                          );
-
-                          updateValue(
-                            (1 -
-                                        ((animation.value -
-                                                minBottomSheetHeight) /
-                                            (maxBottomSheetHeight -
-                                                minBottomSheetHeight))) *
-                                    (maxPlayerHeight - minPlayerHeight) +
-                                minPlayerHeight,
-                          );
-                        },
-                      );
-                    },
-                  );
-                }
-
-                void animateToMin() {
-                  final animation =
-                      Tween(begin: height, end: minBottomSheetHeight)
-                          .chain(CurveTween(curve: animationCurve))
-                          .animate(bottomSheetAnimationController);
-
-                  animation.addListener(() {
-                    _bottomSheetHeight.sink.add(
-                      animation.value,
-                    );
-
-                    updateValue(
-                      (1 -
-                                  ((animation.value - minBottomSheetHeight) /
-                                      (maxBottomSheetHeight -
-                                          minBottomSheetHeight))) *
-                              (maxPlayerHeight - minPlayerHeight) +
-                          minPlayerHeight,
-                    );
-                  });
-
-                  bottomSheetAnimationController.reset();
-                  bottomSheetAnimationController.forward().then(
-                    (value) {
-                      animation.removeListener(
-                        () {
-                          _bottomSheetHeight.sink.add(
-                            animation.value,
-                          );
-
-                          updateValue(
-                            (1 -
-                                        ((animation.value -
-                                                minBottomSheetHeight) /
-                                            (maxBottomSheetHeight -
-                                                minBottomSheetHeight))) *
-                                    (maxPlayerHeight - minPlayerHeight) +
-                                minPlayerHeight,
-                          );
-                        },
-                      );
-                    },
-                  );
-                }
-
                 return Opacity(
                   opacity: opacity,
                   child: Container(
@@ -481,38 +347,22 @@ class _MusicPlayerAnimationTestPageState
                         if (dy != 0) {
                           final targetHeight = _bottomSheetHeight.value - dy;
 
-                          if (targetHeight > maxBottomSheetHeight) {
-                            _bottomSheetHeight.sink.add(maxBottomSheetHeight);
-                          } else if (targetHeight < minBottomSheetHeight) {
-                            _bottomSheetHeight.sink.add(minBottomSheetHeight);
-                          } else {
-                            _bottomSheetHeight.sink.add(targetHeight);
-
-                            updateValue(
-                              (1 -
-                                          ((targetHeight -
-                                                  minBottomSheetHeight) /
-                                              (maxBottomSheetHeight -
-                                                  minBottomSheetHeight))) *
-                                      (maxPlayerHeight - minPlayerHeight) +
-                                  minPlayerHeight,
-                            );
-                          }
+                          updateBottomSheetHeight(targetHeight);
                         }
                       },
                       onPanEnd: (details) {
                         final speed = details.velocity.pixelsPerSecond.dy;
 
                         if (speed < 0) {
-                          animateToMax();
+                          bottomSheetAnimateToMax(height);
                         } else if (speed == 0) {
                           if (height < maxBottomSheetHeight / 2) {
-                            animateToMin();
+                            bottomSheetAnimateToMin(height);
                           } else {
-                            animateToMax();
+                            bottomSheetAnimateToMax(height);
                           }
                         } else {
-                          animateToMin();
+                          bottomSheetAnimateToMin(height);
                         }
                       },
                       child: SingleChildScrollView(
@@ -594,7 +444,9 @@ class _MusicPlayerAnimationTestPageState
     );
   }
 
-  Widget _buildPlayerAppBarArea() {
+  Widget _buildPlayerAppBarArea({
+    Function()? onPressedAnimateToMin,
+  }) {
     return Row(
       children: [
         IconButton(
@@ -602,11 +454,11 @@ class _MusicPlayerAnimationTestPageState
             Icons.expand_more,
             color: Colors.white,
           ),
-          onPressed: () {},
+          onPressed: onPressedAnimateToMin,
         ),
-        IconButton(
-          icon: const SizedBox.shrink(),
-          onPressed: () {},
+        const IconButton(
+          icon: SizedBox.shrink(),
+          onPressed: null,
         ),
         const Flexible(
           fit: FlexFit.tight,
@@ -928,5 +780,227 @@ class _MusicPlayerAnimationTestPageState
       0.0,
       maxAlbumPaddingSize,
     ));
+  }
+
+  //----------------------------------------------------------------------------
+
+  void musicPlayerAnimateToMax(
+    double height,
+  ) {
+    if (_bottomSheetHeight.value <= minBottomSheetHeight) {
+      final animation = Tween(begin: height, end: maxPlayerHeight)
+          .chain(CurveTween(curve: animationCurve))
+          .animate(musicPlayerAnimationController);
+
+      animation.addListener(() {
+        _playerHeight.sink.add(animation.value);
+        _bottomSheetHeight.sink.add(
+          (animation.value - minPlayerHeight) /
+              (maxPlayerHeight - minPlayerHeight) *
+              minBottomSheetHeight,
+        );
+
+        updateValue(animation.value);
+      });
+
+      musicPlayerAnimationController.reset();
+      musicPlayerAnimationController.forward().then(
+        (value) {
+          animation.removeListener(
+            () {
+              _playerHeight.sink.add(animation.value);
+              _bottomSheetHeight.sink.add(
+                (animation.value - minPlayerHeight) /
+                    (maxPlayerHeight - minPlayerHeight) *
+                    minBottomSheetHeight,
+              );
+
+              updateValue(animation.value);
+            },
+          );
+
+          musicPlayerState = MusicPlayerState.expanded;
+        },
+      );
+    } else {}
+  }
+
+  void musicPlayerAnimateToMin(
+    double height,
+  ) {
+    if (_bottomSheetHeight.value <= minBottomSheetHeight) {
+      final animation = Tween(begin: height, end: minPlayerHeight)
+          .chain(CurveTween(curve: animationCurve))
+          .animate(musicPlayerAnimationController);
+
+      animation.addListener(() {
+        _playerHeight.sink.add(animation.value);
+        _bottomSheetHeight.sink.add(
+          (animation.value - minPlayerHeight) /
+              (maxPlayerHeight - minPlayerHeight) *
+              minBottomSheetHeight,
+        );
+
+        updateValue(animation.value);
+      });
+
+      musicPlayerAnimationController.reset();
+      musicPlayerAnimationController.forward().then(
+        (value) {
+          animation.removeListener(
+            () {
+              _playerHeight.sink.add(animation.value);
+              _bottomSheetHeight.sink.add(
+                (animation.value - minPlayerHeight) /
+                    (maxPlayerHeight - minPlayerHeight) *
+                    minBottomSheetHeight,
+              );
+
+              updateValue(animation.value);
+            },
+          );
+
+          musicPlayerState = MusicPlayerState.contracted;
+        },
+      );
+    } else {}
+  }
+
+  void updateMusicPlayerHeight(double targetHeight) {
+    if (targetHeight > maxPlayerHeight) {
+      _playerHeight.sink.add(maxPlayerHeight);
+      _bottomSheetHeight.sink.add(minBottomSheetHeight);
+
+      musicPlayerState = MusicPlayerState.expanded;
+    } else {
+      _playerHeight.sink.add(targetHeight);
+
+      if (targetHeight >= 0) {
+        _bottomSheetHeight.sink.add(
+          math.max(
+              (targetHeight - minPlayerHeight) /
+                  (maxPlayerHeight - minPlayerHeight) *
+                  minBottomSheetHeight,
+              0.0),
+        );
+        updateValue(targetHeight);
+      }
+
+      if (targetHeight <= minPlayerHeight) {
+        musicPlayerState = MusicPlayerState.contracted;
+      } else {
+        musicPlayerState = MusicPlayerState.changing;
+      }
+    }
+  }
+
+  //----------------------------------------------------------------------------
+
+  void bottomSheetAnimateToMax(
+    double height,
+  ) {
+    final animation = Tween(begin: height, end: maxBottomSheetHeight)
+        .chain(CurveTween(curve: animationCurve))
+        .animate(bottomSheetAnimationController);
+
+    animation.addListener(() {
+      _bottomSheetHeight.sink.add(
+        animation.value,
+      );
+
+      updateValue(
+        (1 -
+                    ((animation.value - minBottomSheetHeight) /
+                        (maxBottomSheetHeight - minBottomSheetHeight))) *
+                (maxPlayerHeight - minPlayerHeight) +
+            minPlayerHeight,
+      );
+    });
+
+    bottomSheetAnimationController.reset();
+    bottomSheetAnimationController.forward().then(
+      (value) {
+        animation.removeListener(
+          () {
+            _bottomSheetHeight.sink.add(
+              animation.value,
+            );
+
+            updateValue(
+              (1 -
+                          ((animation.value - minBottomSheetHeight) /
+                              (maxBottomSheetHeight - minBottomSheetHeight))) *
+                      (maxPlayerHeight - minPlayerHeight) +
+                  minPlayerHeight,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void bottomSheetAnimateToMin(
+    double height,
+  ) {
+    final animation = Tween(begin: height, end: minBottomSheetHeight)
+        .chain(CurveTween(curve: animationCurve))
+        .animate(bottomSheetAnimationController);
+
+    animation.addListener(() {
+      _bottomSheetHeight.sink.add(
+        animation.value,
+      );
+
+      updateValue(
+        (1 -
+                    ((animation.value - minBottomSheetHeight) /
+                        (maxBottomSheetHeight - minBottomSheetHeight))) *
+                (maxPlayerHeight - minPlayerHeight) +
+            minPlayerHeight,
+      );
+    });
+
+    bottomSheetAnimationController.reset();
+    bottomSheetAnimationController.forward().then(
+      (value) {
+        animation.removeListener(
+          () {
+            _bottomSheetHeight.sink.add(
+              animation.value,
+            );
+
+            updateValue(
+              (1 -
+                          ((animation.value - minBottomSheetHeight) /
+                              (maxBottomSheetHeight - minBottomSheetHeight))) *
+                      (maxPlayerHeight - minPlayerHeight) +
+                  minPlayerHeight,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void updateBottomSheetHeight(double targetHeight) {
+    if (targetHeight >= maxBottomSheetHeight) {
+      _bottomSheetHeight.sink.add(maxBottomSheetHeight);
+    } else if (targetHeight <= minBottomSheetHeight) {
+      _bottomSheetHeight.sink.add(minBottomSheetHeight);
+    } else {
+      _bottomSheetHeight.sink.add(targetHeight);
+
+      updateValue(
+        (1 -
+                        ((targetHeight - minBottomSheetHeight) /
+                            (maxBottomSheetHeight - minBottomSheetHeight)))
+                    .clamp(
+                  0.0,
+                  1.0,
+                ) *
+                (maxPlayerHeight - minPlayerHeight) +
+            minPlayerHeight,
+      );
+    }
   }
 }
