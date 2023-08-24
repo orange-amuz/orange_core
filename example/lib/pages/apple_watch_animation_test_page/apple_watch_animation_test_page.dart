@@ -24,25 +24,27 @@ class _AppleWatchAnimationTestPageState
 
   final rnd = math.Random();
 
-  int firstAngle = 0;
-  int secondAngle = 0;
-  int thirdAngle = 0;
+  late Tween<double> firstTween = Tween(
+    begin: 0,
+    end: rnd.nextInt(360).toDouble(),
+  );
+  late Tween<double> secondTween = Tween(
+    begin: 0,
+    end: rnd.nextInt(360).toDouble(),
+  );
+  late Tween<double> thirdTween = Tween(
+    begin: 0,
+    end: rnd.nextInt(360).toDouble(),
+  );
 
   @override
   void initState() {
     super.initState();
 
-    animationController.addListener(
-      () {
-        setState(() {});
-      },
+    animationController.animateTo(
+      1,
+      curve: animationCurve,
     );
-
-    firstAngle = rnd.nextInt(13);
-    secondAngle = rnd.nextInt(13);
-    thirdAngle = rnd.nextInt(13);
-
-    animationController.forward();
   }
 
   @override
@@ -59,12 +61,16 @@ class _AppleWatchAnimationTestPageState
         actions: [
           IconButton(
             onPressed: () {
-              firstAngle = rnd.nextInt(13);
-              secondAngle = rnd.nextInt(13);
-              thirdAngle = rnd.nextInt(13);
+              firstTween.end = rnd.nextInt(360).toDouble();
+              secondTween.end = rnd.nextInt(360).toDouble();
+              thirdTween.end = rnd.nextInt(360).toDouble();
 
               animationController.reset();
-              animationController.forward();
+
+              animationController.animateTo(
+                1,
+                curve: animationCurve,
+              );
             },
             icon: const Icon(
               Icons.restore,
@@ -74,30 +80,29 @@ class _AppleWatchAnimationTestPageState
       ),
       body: SafeArea(
         child: Center(
-          child: CustomPaint(
-            painter: AppleWatchPainter(
-              firstAngle: Tween(
-                begin: 0,
-                end: 2 * math.pi * firstAngle / 13,
-              )
-                  .chain(CurveTween(curve: animationCurve))
-                  .evaluate(animationController)
-                  .toDouble(),
-              secondAngle: Tween(
-                begin: 0,
-                end: 2 * math.pi * secondAngle / 13,
-              )
-                  .chain(CurveTween(curve: animationCurve))
-                  .evaluate(animationController)
-                  .toDouble(),
-              thirdAngle: Tween(
-                begin: 0,
-                end: 2 * math.pi * thirdAngle / 13,
-              )
-                  .chain(CurveTween(curve: animationCurve))
-                  .evaluate(animationController)
-                  .toDouble(),
-            ),
+          child: AnimatedBuilder(
+            animation: animationController,
+            builder: (_, child) {
+              final firstAngle = firstTween.transform(
+                animationController.value,
+              );
+
+              final secondAngle = secondTween.transform(
+                animationController.value,
+              );
+
+              final thirdAngle = thirdTween.transform(
+                animationController.value,
+              );
+
+              return CustomPaint(
+                painter: AppleWatchPainter(
+                  firstAngle: firstAngle * math.pi / 180,
+                  secondAngle: secondAngle * math.pi / 180,
+                  thirdAngle: thirdAngle * math.pi / 180,
+                ),
+              );
+            },
           ),
         ),
       ),
