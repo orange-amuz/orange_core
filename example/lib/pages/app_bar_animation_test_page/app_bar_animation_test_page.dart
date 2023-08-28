@@ -22,6 +22,8 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
 
   static const double minOpacityHeight = 150;
 
+  final textSizeTween = Tween<double>(begin: 15, end: 20);
+
   final _scrollOffset = BehaviorSubject.seeded(0.0);
   final scrollController = ScrollController();
 
@@ -129,7 +131,7 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
         ((appBarHeight - minAppBarHeight) / (maxAppBarHeight - minAppBarHeight))
             .clamp(0.0, 1.0);
 
-    final double textSize = 15 + (5 * appBarHeightRatio);
+    final double textSize = textSizeTween.transform(appBarHeightRatio);
 
     final opacity = (appBarHeight.clamp(minOpacityHeight, maxAppBarHeight) -
             minOpacityHeight) /
