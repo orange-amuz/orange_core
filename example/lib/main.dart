@@ -2,6 +2,7 @@ import 'package:example/pages/app_bar_animation_test_page/app_bar_animation_test
 import 'package:example/pages/apple_watch_animation_test_page/apple_watch_animation_test_page.dart';
 import 'package:example/pages/arrow_animation_test_page/arrow_animation_test_page.dart';
 import 'package:example/pages/card_animation_test_page/card_animation_test_page.dart';
+import 'package:example/pages/container_animation_test_page/container_animation_test_page.dart';
 import 'package:example/pages/dice_animation_test_page/dice_animation_test_page.dart';
 import 'package:example/pages/hover_animation_test_page/hover_animation_test_page.dart';
 import 'package:example/pages/music_player_animation_test_page/music_player_animation_test_page.dart';
@@ -59,7 +60,27 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  late final lottieController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1000),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    lottieController.repeat();
+  }
+
+  @override
+  void dispose() {
+    lottieController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -269,6 +290,19 @@ class _MyHomePageState extends State<MyHomePage> {
               context,
               MaterialPageRoute(
                 builder: (_) => const ArrowAnimationTestPage(),
+              ),
+            );
+          },
+        ),
+        CupertinoButton(
+          child: const Text(
+            'Go To Container Animation Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ContainerAnimationTestPage(),
               ),
             );
           },

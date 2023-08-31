@@ -40,8 +40,9 @@ class _NicoMusicPlayerAnimationTestPageState
       Navigator.push(
         context,
         PageRouteBuilder(
-          fullscreenDialog: false,
+          fullscreenDialog: true,
           barrierDismissible: true,
+          opaque: false,
           pageBuilder: (context, animation, secondaryAnimation) =>
               NicoMusicPlayerDetailPage(
             index: index,
@@ -49,15 +50,62 @@ class _NicoMusicPlayerAnimationTestPageState
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             final opacityTween = Tween(begin: 0.0, end: 1.0);
 
+            // final offsetTween = Tween(
+            //   begin: const Offset(0.0, 1.0),
+            //   end: const Offset(0.0, 0.0),
+            // );
+
+            // return SlideTransition(
+            //   position: animation.drive(
+            //     offsetTween,
+            //   ),
+            //   child: child,
+            // );
+
             return FadeTransition(
               opacity: animation.drive(
                 opacityTween,
               ),
               child: child,
+              // child: Semantics(
+              //   scopesRoute: true,
+              //   explicitChildNodes: true,
+              //   child: child,
+              // ),
             );
           },
         ),
       );
+      // showModalBottomSheet(
+      //   context: context,
+      //   elevation: 0,
+      //   isScrollControlled: true,
+      //   useSafeArea: true,
+      //   builder: (context) {
+      //     return NicoMusicPlayerDetailPage(
+      //       index: index,
+      //     );
+      //     // return PageRouteBuilder(
+      //     //   fullscreenDialog: false,
+      //     //   barrierDismissible: true,
+      //     //   pageBuilder: (context, animation, secondaryAnimation) =>
+      //     //       NicoMusicPlayerDetailPage(
+      //     //     index: index,
+      //     //   ),
+      //     //   transitionsBuilder:
+      //     //       (context, animation, secondaryAnimation, child) {
+      //     //     final opacityTween = Tween(begin: 0.0, end: 1.0);
+
+      //     //     return FadeTransition(
+      //     //       opacity: animation.drive(
+      //     //         opacityTween,
+      //     //       ),
+      //     //       child: child,
+      //     //     );
+      //     //   },
+      //     // );
+      //   },
+      // );
     } else {
       pageController.animateToPage(
         index,
@@ -139,6 +187,7 @@ class _NicoMusicPlayerAnimationTestPageState
                             },
                             child: Hero(
                               tag: '$index',
+                              transitionOnUserGestures: true,
                               child: Transform.scale(
                                 scale: scale,
                                 child: Container(
