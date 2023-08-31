@@ -108,7 +108,7 @@ class _NicoMusicPlayerDetailPageState extends State<NicoMusicPlayerDetailPage>
             const SizedBox(
               height: 35,
             ),
-            Text(
+            const Text(
               'Title',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -119,7 +119,7 @@ class _NicoMusicPlayerDetailPageState extends State<NicoMusicPlayerDetailPage>
             const SizedBox(
               height: 10,
             ),
-            Text(
+            const Text(
               'subtitle',
               style: TextStyle(
                 fontWeight: FontWeight.normal,

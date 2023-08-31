@@ -116,7 +116,7 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
           return SizedBox(
             width: width,
             height: height,
-            child: Stack(
+            child: const Stack(
               children: [],
             ),
           );
