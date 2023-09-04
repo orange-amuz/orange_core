@@ -38,6 +38,11 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white.withOpacity(0),
+        // backgroundColor: Colors.black.withOpacity(0),
+      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           OverflowBox(
@@ -50,7 +55,7 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).padding.top,
+            top: MediaQuery.of(context).padding.top + 56,
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height -
