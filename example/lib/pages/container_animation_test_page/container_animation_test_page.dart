@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:example/pages/container_animation_test_page/custom_page_route.dart';
 import 'package:example/pages/container_animation_test_page/detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -16,6 +17,8 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
   static const animationDuration = Duration(milliseconds: 500);
   static const animationCurve = Curves.easeInOut;
 
+  // static const transitionAnimationCurve = Curves.easeInOut;
+
   late final fabAnimation = AnimationController(
     vsync: this,
     duration: animationDuration,
@@ -27,6 +30,8 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
       .chain(CurveTween(curve: animationCurve));
 
   bool isOpend = false;
+
+  final key = GlobalKey();
 
   @override
   void dispose() {
@@ -63,7 +68,7 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
               child: Column(
                 children: [
                   OpenContainer(
-                    transitionType: ContainerTransitionType.fade,
+                    transitionType: ContainerTransitionType.fadeThrough,
                     useRootNavigator: true,
                     transitionDuration: const Duration(milliseconds: 500),
                     closedShape: const RoundedRectangleBorder(
@@ -72,6 +77,12 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
                     closedElevation: 0,
                     openBuilder: (context, action) {
                       return const DetailPage();
+
+                      // return const Dialog(
+                      //   insetPadding: EdgeInsets.zero,
+                      //   child: DetailPage(),
+                      // );
+                      // return const SizedBox.shrink();
                     },
                     closedBuilder: (context, action) {
                       return Container(
@@ -80,6 +91,100 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
                         color: Colors.yellow,
                       );
                     },
+                  ),
+                  Hero(
+                    tag: '${key.hashCode}',
+                    transitionOnUserGestures: false,
+                    child: Container(
+                      key: key,
+                      width: double.infinity,
+                      height: 100,
+                      color: Colors.blue,
+                      child: GestureDetector(
+                        onTap: () {
+                          // final renderBox = key.currentContext
+                          //     ?.findRenderObject() as RenderBox;
+
+                          // final offset = renderBox.localToGlobal(Offset.zero);
+
+                          Navigator.push(
+                            context,
+                            CustomPageRoute(
+                              initialWidth: double.infinity,
+                              initialHeight: 100,
+                              maintainState: false,
+                              builder: (context) {
+                                return const DetailPage();
+                              },
+                            ),
+
+                            // PageRouteBuilder(
+                            //   fullscreenDialog: true,
+                            //   barrierDismissible: true,
+                            //   opaque: false,
+                            //   pageBuilder: (
+                            //     context,
+                            //     animation,
+                            //     secondaryAnimation,
+                            //   ) {
+                            //     return Hero(
+                            //       // tag: '${key.hashCode}',
+                            //       tag: '',
+                            //       transitionOnUserGestures: false,
+                            //       child: DetailPage(),
+                            //     );
+                            //   },
+                            //   transitionsBuilder: (
+                            //     context,
+                            //     animation,
+                            //     secondaryAnimation,
+                            //     child,
+                            //   ) {
+                            //     final height = Tween<double>(
+                            //       begin: 100,
+                            //       end: MediaQuery.of(context).size.height,
+                            //     )
+                            //         .chain(CurveTween(
+                            //             curve: transitionAnimationCurve))
+                            //         .transform(
+                            //           animation.value,
+                            //         );
+
+                            //     final topMargin = Tween<double>(
+                            //       begin: offset.dy,
+                            //       end: 0,
+                            //     )
+                            //         .chain(CurveTween(
+                            //             curve: transitionAnimationCurve))
+                            //         .transform(animation.value);
+
+                            //     return SizedBox(
+                            //       width: MediaQuery.of(context).size.width,
+                            //       height: MediaQuery.of(context).size.height,
+                            //       child: Container(
+                            //         margin: EdgeInsets.only(
+                            //           top: topMargin,
+                            //         ),
+                            //         alignment: Alignment.topCenter,
+                            //         child: SizedBox(
+                            //           height: height,
+                            //           child: OverflowBox(
+                            //             child: child,
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     );
+                            //   },
+                            // ),
+                            // MaterialPageRoute(
+                            //   builder: (_) {
+                            //     return DetailPage();
+                            //   },
+                            // ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
