@@ -42,6 +42,8 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0),
@@ -53,9 +55,10 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
           OverflowBox(
             child: Lottie.asset(
               'assets/blur_bg.json',
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              fit: BoxFit.fitWidth,
+              width: size.width,
+              height: size.height,
+              fit:
+                  size.width > size.height ? BoxFit.fitWidth : BoxFit.fitHeight,
               reverse: true,
             ),
           ),

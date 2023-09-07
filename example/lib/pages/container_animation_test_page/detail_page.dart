@@ -26,32 +26,11 @@ class _DetailPageState extends State<DetailPage> {
           },
         ),
       ),
+      body: const Center(
+        child: Text(
+          'hello world',
+        ),
+      ),
     );
-    // return Dismissible(
-    //   key: key,
-    //   direction: DismissDirection.horizontal,
-    //   resizeDuration: null,
-    //   background: Container(
-    //     color: Colors.transparent,
-    //   ),
-    //   onDismissed: (direction) {
-    //     Navigator.pop(context);
-    //   },
-    //   child: Scaffold(
-    //     appBar: AppBar(
-    //       automaticallyImplyLeading: false,
-    //       backgroundColor: Colors.black,
-    //       leading: IconButton(
-    //         icon: const Icon(
-    //           Icons.arrow_back,
-    //           color: Colors.white,
-    //         ),
-    //         onPressed: () {
-    //           Navigator.pop(context);
-    //         },
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

@@ -7,11 +7,14 @@ class CustomPageRoute<T> extends PageRoute<T>
     required this.builder,
     required this.key,
     this.maintainState = true,
-  });
+  }) : assert(
+          !(key.currentContext == null),
+          'Key must attached to base Widget',
+        );
 
   final WidgetBuilder builder;
 
-  final Key key;
+  final GlobalKey key;
 
   bool arrivedCompleted = false;
   AnimationStatus beforeStatus = AnimationStatus.dismissed;
@@ -19,8 +22,7 @@ class CustomPageRoute<T> extends PageRoute<T>
   bool dismissUseGesture = false;
   bool isLastFrame = false;
 
-  late final renderBox =
-      (key as GlobalKey).currentContext?.findRenderObject() as RenderBox;
+  late final renderBox = key.currentContext!.findRenderObject() as RenderBox;
 
   late final offset = renderBox.localToGlobal(Offset.zero);
   late final size = renderBox.size;
