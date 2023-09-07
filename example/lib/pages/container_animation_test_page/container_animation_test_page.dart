@@ -66,6 +66,7 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
               height: MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   OpenContainer(
                     transitionType: ContainerTransitionType.fadeThrough,
@@ -77,12 +78,6 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
                     closedElevation: 0,
                     openBuilder: (context, action) {
                       return const DetailPage();
-
-                      // return const Dialog(
-                      //   insetPadding: EdgeInsets.zero,
-                      //   child: DetailPage(),
-                      // );
-                      // return const SizedBox.shrink();
                     },
                     closedBuilder: (context, action) {
                       return Container(
@@ -92,98 +87,24 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
                       );
                     },
                   ),
-                  Hero(
-                    tag: '${key.hashCode}',
-                    transitionOnUserGestures: false,
-                    child: Container(
-                      key: key,
-                      width: double.infinity,
-                      height: 100,
-                      color: Colors.blue,
-                      child: GestureDetector(
-                        onTap: () {
-                          // final renderBox = key.currentContext
-                          //     ?.findRenderObject() as RenderBox;
-
-                          // final offset = renderBox.localToGlobal(Offset.zero);
-
-                          Navigator.push(
-                            context,
-                            CustomPageRoute(
-                              initialWidth: double.infinity,
-                              initialHeight: 100,
-                              maintainState: false,
-                              builder: (context) {
-                                return const DetailPage();
-                              },
-                            ),
-
-                            // PageRouteBuilder(
-                            //   fullscreenDialog: true,
-                            //   barrierDismissible: true,
-                            //   opaque: false,
-                            //   pageBuilder: (
-                            //     context,
-                            //     animation,
-                            //     secondaryAnimation,
-                            //   ) {
-                            //     return Hero(
-                            //       // tag: '${key.hashCode}',
-                            //       tag: '',
-                            //       transitionOnUserGestures: false,
-                            //       child: DetailPage(),
-                            //     );
-                            //   },
-                            //   transitionsBuilder: (
-                            //     context,
-                            //     animation,
-                            //     secondaryAnimation,
-                            //     child,
-                            //   ) {
-                            //     final height = Tween<double>(
-                            //       begin: 100,
-                            //       end: MediaQuery.of(context).size.height,
-                            //     )
-                            //         .chain(CurveTween(
-                            //             curve: transitionAnimationCurve))
-                            //         .transform(
-                            //           animation.value,
-                            //         );
-
-                            //     final topMargin = Tween<double>(
-                            //       begin: offset.dy,
-                            //       end: 0,
-                            //     )
-                            //         .chain(CurveTween(
-                            //             curve: transitionAnimationCurve))
-                            //         .transform(animation.value);
-
-                            //     return SizedBox(
-                            //       width: MediaQuery.of(context).size.width,
-                            //       height: MediaQuery.of(context).size.height,
-                            //       child: Container(
-                            //         margin: EdgeInsets.only(
-                            //           top: topMargin,
-                            //         ),
-                            //         alignment: Alignment.topCenter,
-                            //         child: SizedBox(
-                            //           height: height,
-                            //           child: OverflowBox(
-                            //             child: child,
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     );
-                            //   },
-                            // ),
-                            // MaterialPageRoute(
-                            //   builder: (_) {
-                            //     return DetailPage();
-                            //   },
-                            // ),
-                          );
-                        },
-                      ),
+                  Container(
+                    key: key,
+                    width: 100,
+                    height: 100,
+                    color: Colors.blue,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          CustomPageRoute(
+                            key: key,
+                            maintainState: false,
+                            builder: (context) {
+                              return const DetailPage();
+                            },
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -192,31 +113,6 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
           ),
         ],
       ),
-      // body: SafeArea(
-      //   child: Column(
-      //     children: [
-      //       OpenContainer(
-      //         transitionType: ContainerTransitionType.fade,
-      //         useRootNavigator: true,
-      //         transitionDuration: const Duration(milliseconds: 500),
-      //         closedShape: const RoundedRectangleBorder(
-      //           borderRadius: BorderRadius.zero,
-      //         ),
-      //         closedElevation: 0,
-      //         openBuilder: (context, action) {
-      //           return const DetailPage();
-      //         },
-      //         closedBuilder: (context, action) {
-      //           return Container(
-      //             width: double.infinity,
-      //             height: 100,
-      //             color: Colors.yellow,
-      //           );
-      //         },
-      //       ),
-      //     ],
-      //   ),
-      // ),
       floatingActionButton: AnimatedBuilder(
         animation: fabAnimation,
         builder: (_, child) {

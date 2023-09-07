@@ -5,23 +5,27 @@ class CustomPageRoute<T> extends PageRoute<T>
     with MaterialRouteTransitionMixin {
   CustomPageRoute({
     required this.builder,
-    // required this.key,
-    required this.initialWidth,
-    required this.initialHeight,
+    required this.key,
     this.maintainState = true,
   });
 
   final WidgetBuilder builder;
 
-  final double initialWidth;
-  final double initialHeight;
-
-  // final Key key;
+  final Key key;
 
   bool arrivedCompleted = false;
   AnimationStatus beforeStatus = AnimationStatus.dismissed;
 
-  bool dismissUseGesture = true;
+  bool dismissUseGesture = false;
+  bool isLastFrame = false;
+
+  late final renderBox =
+      (key as GlobalKey).currentContext?.findRenderObject() as RenderBox;
+
+  late final offset = renderBox.localToGlobal(Offset.zero);
+  late final size = renderBox.size;
+
+  static const animationCurve = Curves.easeInOut;
 
   @override
   Widget buildContent(BuildContext context) => builder(context);
@@ -53,8 +57,17 @@ class CustomPageRoute<T> extends PageRoute<T>
     }
 
     if ((arrivedCompleted)) {
-      if (beforeStatus == AnimationStatus.forward ||
-          beforeStatus == AnimationStatus.completed) {
+      if (beforeStatus == AnimationStatus.forward) {
+        isLastFrame = true;
+      } else if (beforeStatus == AnimationStatus.reverse) {
+        isLastFrame = false;
+      }
+
+      if (navigator?.userGestureInProgress == true) {
+        isLastFrame = true;
+      }
+
+      if (isLastFrame) {
         return theme.buildTransitions<T>(
           this,
           context,
@@ -62,16 +75,6 @@ class CustomPageRoute<T> extends PageRoute<T>
           secondaryAnimation,
           child,
         );
-        // if (navigator?.userGestureInProgress ?? true) {
-        // } else {
-        //   if (beforeStatus == AnimationStatus.completed) {
-        //   } else {
-        //     dismissUseGesture = false;
-        //     print('dismissUseGesture to false at ${DateTime.now()}');
-        //   }
-        // }
-
-        // if (dismissUseGesture) {}
       }
     }
 
@@ -79,60 +82,42 @@ class CustomPageRoute<T> extends PageRoute<T>
     final screenHeight = MediaQuery.of(context).size.height;
 
     final width = Tween<double>(
-      begin: math.min(initialWidth, screenWidth),
+      begin: math.min(size.width, screenWidth),
       end: screenWidth,
-    ).transform(animation.value);
+    ).chain(CurveTween(curve: animationCurve)).transform(animation.value);
 
     final height = Tween<double>(
-      begin: math.min(initialHeight, screenHeight),
+      begin: math.min(size.height, screenHeight),
       end: screenHeight,
-    ).transform(animation.value);
+    ).chain(CurveTween(curve: animationCurve)).transform(animation.value);
+
+    final marginTop = Tween<double>(
+      begin: offset.dy,
+      end: 0,
+    ).chain(CurveTween(curve: animationCurve)).transform(animation.value);
+
+    final marginLeft = Tween<double>(
+      begin: offset.dx,
+      end: 0,
+    ).chain(CurveTween(curve: animationCurve)).transform(animation.value);
 
     return SizedBox(
       width: screenWidth,
       height: screenHeight,
-      child: Center(
-        child: OverflowBox(
-          child: SizedBox(
-            width: width,
-            height: height,
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Container(
+          width: width,
+          height: height,
+          margin: EdgeInsets.only(
+            top: marginTop,
+            left: marginLeft,
+          ),
+          child: OverflowBox(
             child: child,
           ),
         ),
       ),
     );
-
-    // final screenWidth = MediaQuery.of(context).size.width;
-    // final screenHeight = MediaQuery.of(context).size.height;
-
-    // final width = Tween<double>(
-    //   begin: math.min(initialWidth, screenWidth),
-    //   end: screenWidth,
-    // ).transform(animation.value);
-
-    // final height = Tween<double>(
-    //   begin: math.min(initialHeight, screenHeight),
-    //   end: screenHeight,
-    // ).transform(animation.value);
-
-    // return SizedBox(
-    //   width: screenWidth,
-    //   height: screenHeight,
-    //   child: Center(
-    //     child: SizedBox(
-    //       width: width,
-    //       height: height,
-    //       child: child,
-    //     ),
-    //   ),
-    // );
-
-    // return theme.buildTransitions<T>(
-    //   this,
-    //   context,
-    //   animation,
-    //   secondaryAnimation,
-    //   child,
-    // );
   }
 }
