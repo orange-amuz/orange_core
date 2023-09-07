@@ -69,7 +69,7 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
               height: MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   OpenContainer(
                     transitionType: ContainerTransitionType.fadeThrough,
@@ -90,24 +90,28 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
                       );
                     },
                   ),
-                  Container(
-                    key: key,
-                    width: 100,
-                    height: 100,
-                    color: Colors.blue,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          CustomPageRoute(
-                            key: key,
-                            maintainState: false,
-                            builder: (context) {
-                              return const DetailPage();
-                            },
-                          ),
-                        );
-                      },
+                  Hero(
+                    // tag: 'test',
+                    tag: 'tag',
+                    child: Container(
+                      key: key,
+                      width: double.infinity,
+                      height: 100,
+                      color: Colors.blue,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CustomPageRoute(
+                              key: key,
+                              maintainState: false,
+                              builder: (context) {
+                                return const DetailPage();
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],

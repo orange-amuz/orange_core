@@ -26,11 +26,16 @@ class _DetailPageState extends State<DetailPage> {
           },
         ),
       ),
-      body: const Center(
-        child: Text(
-          'hello world',
-        ),
-      ),
+      body: Center(
+          // child: Hero(
+          //   tag: 'test',
+          //   child: Container(
+          //     width: 200,
+          //     height: 200,
+          //     color: Colors.blue,
+          //   ),
+          // ),
+          ),
     );
   }
 }

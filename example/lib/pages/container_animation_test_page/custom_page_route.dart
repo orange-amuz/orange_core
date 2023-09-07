@@ -103,6 +103,11 @@ class CustomPageRoute<T> extends PageRoute<T>
       end: 0,
     ).chain(CurveTween(curve: animationCurve)).transform(animation.value);
 
+    final opacity = Tween<double>(
+      begin: 0.0,
+      end: 1,
+    ).chain(CurveTween(curve: animationCurve)).transform(animation.value);
+
     return SizedBox(
       width: screenWidth,
       height: screenHeight,
@@ -111,11 +116,13 @@ class CustomPageRoute<T> extends PageRoute<T>
         child: Container(
           width: width,
           height: height,
+          color: Colors.white,
           margin: EdgeInsets.only(
             top: marginTop,
             left: marginLeft,
           ),
-          child: OverflowBox(
+          child: Opacity(
+            opacity: opacity,
             child: child,
           ),
         ),

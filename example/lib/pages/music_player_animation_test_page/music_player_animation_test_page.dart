@@ -23,7 +23,8 @@ class _MusicPlayerAnimationTestPageState
   static const animationCurve = Curves.easeInOut;
 
   static const double minPlayerHeight = 70;
-  late final double maxPlayerHeight = MediaQuery.of(context).size.height;
+  late final double maxPlayerHeight = MediaQuery.of(context).size.height -
+      MediaQuery.of(context).padding.bottom;
 
   late final double togglePlayerHeight =
       MediaQuery.of(context).size.height * 3 / 4;
@@ -34,10 +35,12 @@ class _MusicPlayerAnimationTestPageState
 
   static const double maxAlbumPaddingSize = 40;
 
-  static const double minBottomSheetHeight = 60;
+  late final double minBottomSheetHeight =
+      60 + MediaQuery.of(context).padding.bottom;
   late final double maxBottomSheetHeight = MediaQuery.of(context).size.height -
       MediaQuery.of(context).padding.vertical -
-      minPlayerHeight;
+      minPlayerHeight +
+      MediaQuery.of(context).padding.bottom;
 
   final String title = 'Here is 노래 제목';
   final String artist = 'Here is 가수 이름';
