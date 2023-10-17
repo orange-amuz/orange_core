@@ -10,7 +10,8 @@ class RotateAnimationWidget extends StatefulWidget {
     this.animationCurve = Curves.easeInOut,
     this.animationDuration = const Duration(milliseconds: 1000),
     required this.y,
-    required this.animationController,
+    // required this.animationController,
+    required this.animationValue,
     required this.child,
   }) : super(key: key);
 
@@ -21,7 +22,8 @@ class RotateAnimationWidget extends StatefulWidget {
   final Duration animationDuration;
 
   final double y;
-  final AnimationController animationController;
+  // final AnimationController animationController;
+  final double animationValue;
   final Widget child;
 
   static const double xAngle = math.pi / 4;
@@ -31,20 +33,19 @@ class RotateAnimationWidget extends StatefulWidget {
   State<RotateAnimationWidget> createState() => _RotateAnimationWidget();
 }
 
-class _RotateAnimationWidget extends State<RotateAnimationWidget>
-    with SingleTickerProviderStateMixin {
+class _RotateAnimationWidget extends State<RotateAnimationWidget> {
   @override
   void initState() {
     super.initState();
 
-    widget.animationController.addListener(listener);
+    // widget.animationController.addListener(listener);
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    widget.animationController.removeListener(listener);
+    // widget.animationController.removeListener(listener);
   }
 
   void listener() {
@@ -58,7 +59,7 @@ class _RotateAnimationWidget extends State<RotateAnimationWidget>
         0.0,
         Tween(begin: 0.0, end: widget.y)
             .chain(CurveTween(curve: widget.animationCurve))
-            .evaluate(widget.animationController)
+            .transform(widget.animationValue)
             .toDouble(),
       ),
       child: Transform(
@@ -69,7 +70,7 @@ class _RotateAnimationWidget extends State<RotateAnimationWidget>
               end: RotateAnimationWidget.xAngle,
             )
                 .chain(CurveTween(curve: widget.animationCurve))
-                .evaluate(widget.animationController)
+                .transform(widget.animationValue)
                 .toDouble(),
           )
           ..rotateZ(
@@ -78,7 +79,7 @@ class _RotateAnimationWidget extends State<RotateAnimationWidget>
               end: RotateAnimationWidget.zAngle,
             )
                 .chain(CurveTween(curve: widget.animationCurve))
-                .evaluate(widget.animationController)
+                .transform(widget.animationValue)
                 .toDouble(),
           )
           ..translate(
@@ -87,7 +88,7 @@ class _RotateAnimationWidget extends State<RotateAnimationWidget>
               end: widget.boxWidth * math.cos(RotateAnimationWidget.zAngle),
             )
                 .chain(CurveTween(curve: widget.animationCurve))
-                .evaluate(widget.animationController)
+                .transform(widget.animationValue)
                 .toDouble(),
           ),
         child: widget.child,

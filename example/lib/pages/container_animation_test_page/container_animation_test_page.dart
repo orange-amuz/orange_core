@@ -17,8 +17,6 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
   static const animationDuration = Duration(milliseconds: 500);
   static const animationCurve = Curves.easeInOut;
 
-  // static const transitionAnimationCurve = Curves.easeInOut;
-
   late final fabAnimation = AnimationController(
     vsync: this,
     duration: animationDuration,
@@ -47,7 +45,6 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0),
-        // backgroundColor: Colors.black.withOpacity(0),
       ),
       extendBodyBehindAppBar: true,
       body: Stack(
@@ -90,27 +87,105 @@ class _ContainerAnimationTestPageState extends State<ContainerAnimationTestPage>
                       );
                     },
                   ),
-                  Hero(
-                    // tag: 'test',
-                    tag: 'tag',
-                    child: Container(
+                  Container(
+                    width: double.infinity,
+                    height: 100,
+                    color: Colors.blue,
+                    // margin: const EdgeInsets.all(15),
+                    child: GestureDetector(
                       key: key,
-                      width: double.infinity,
-                      height: 100,
-                      color: Colors.blue,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            CustomPageRoute(
-                              key: key,
-                              maintainState: false,
-                              builder: (context) {
-                                return const DetailPage();
-                              },
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          CustomPageRoute(
+                            key: key,
+                            maintainState: false,
+                            builder: (context) {
+                              return const DetailPage();
+                            },
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          const SizedBox(
+                            width: 14,
+                          ),
+                          Hero(
+                            tag: 'title',
+                            // flightShuttleBuilder: (
+                            //   flightContext,
+                            //   animation,
+                            //   flightDirection,
+                            //   fromHeroContext,
+                            //   toHeroContext,
+                            // ) {
+                            //   final fromHeroWidget = fromHeroContext.widget;
+                            //   final toHeroWidget = toHeroContext.widget;
+
+                            //   return AnimatedBuilder(
+                            //     animation: animation,
+                            //     builder: (_, child) {
+                            //       final width = Tween<double>(
+                            //         begin: 80,
+                            //         end: MediaQuery.of(context).size.width,
+                            //       )
+                            //           .chain(CurveTween(curve: Curves.linear))
+                            //           .transform(animation.value);
+
+                            //       print(width);
+
+                            //       final height = math.min(
+                            //         width,
+                            //         MediaQuery.of(context).size.width / 2,
+                            //       );
+
+                            //       return UnconstrainedBox(
+                            //         child: OverflowBox(
+                            //           minWidth: width,
+                            //           maxWidth: width,
+                            //           maxHeight: height,
+                            //           minHeight: height,
+                            //           child: Container(
+                            //             width: width,
+                            //             height: height,
+                            //             color: Colors.orange,
+                            //             // child: OverflowBox(
+                            //             //   child: toHeroWidget,
+                            //             // ),
+                            //           ),
+                            //         ),
+                            //       );
+                            //     },
+                            //   );
+                            // },
+                            // createRectTween: (begin, end) {
+                            //   return Tween<Rect?>(
+                            //     begin: Rect.fromLTRB(
+                            //       begin?.left ?? 0,
+                            //       begin?.top ?? 0,
+                            //       begin?.right ?? 0,
+                            //       begin?.bottom ?? 0,
+                            //     ),
+                            //     end: Rect.fromLTRB(
+                            //       end?.left ?? 0,
+                            //       end?.top ?? 0,
+                            //       end?.right ?? 0,
+                            //       end?.bottom ?? 0,
+                            //     ),
+                            //   );
+                            // },
+                            child: Container(
+                              width: 80,
+                              height: 80,
+                              color: Colors.cyan,
                             ),
-                          );
-                        },
+                          ),
+                          const SizedBox(
+                            width: 14,
+                          ),
+                        ],
                       ),
                     ),
                   ),

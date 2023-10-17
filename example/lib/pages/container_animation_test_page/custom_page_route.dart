@@ -7,14 +7,25 @@ class CustomPageRoute<T> extends PageRoute<T>
     required this.builder,
     required this.key,
     this.maintainState = true,
+    this.transitionDuration = const Duration(milliseconds: 450),
   }) : assert(
           !(key.currentContext == null),
           'Key must attached to base Widget',
         );
 
+  //----------------------------------------------------------------------------
+
   final WidgetBuilder builder;
 
   final GlobalKey key;
+
+  @override
+  final bool maintainState;
+
+  @override
+  final Duration transitionDuration;
+
+  //----------------------------------------------------------------------------
 
   bool arrivedCompleted = false;
   AnimationStatus beforeStatus = AnimationStatus.dismissed;
@@ -34,9 +45,6 @@ class CustomPageRoute<T> extends PageRoute<T>
 
   @override
   bool canTransitionFrom(TransitionRoute previousRoute) => false;
-
-  @override
-  final bool maintainState;
 
   @override
   Widget buildTransitions(
