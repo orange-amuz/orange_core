@@ -39,33 +39,51 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              border: Border.all(),
-            ),
-            child: Stack(
-              children: List.generate(
-                70,
-                (index) {
-                  return _buildBlob(
-                    blobSize: rnd.nextInt(45).toDouble() + 5,
-                    blobDirection: Offset(
-                      rnd.nextInt(9).toDouble() + 1.6,
-                      rnd.nextInt(9).toDouble() + 1.2,
-                    ),
-                    velocity: rnd.nextInt(2).toDouble() + 1,
-                    color: Color.fromRGBO(
-                      // rnd.nextInt(255),
-                      255,
-                      rnd.nextInt(255),
-                      rnd.nextInt(255),
-                      0.7,
-                    ),
-                  );
-                },
+        top: false,
+        bottom: false,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: (details) {
+            animationController.stop();
+          },
+          onTapUp: (details) {
+            animationController.repeat();
+          },
+          child: Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                border: Border.all(),
+              ),
+              child: Stack(
+                children: List.generate(
+                  500,
+                  (index) {
+                    return _buildBlob(
+                      blobSize: rnd.nextInt(45).toDouble() + 5,
+                      blobDirection: Offset(
+                        rnd.nextInt(9).toDouble() + 1.6,
+                        rnd.nextInt(9).toDouble() + 1.2,
+                      ),
+                      velocity: rnd.nextInt(2).toDouble() + 1,
+                      color: Color.fromRGBO(
+                        // rnd.nextInt(255),
+                        255,
+                        rnd.nextInt(255),
+                        rnd.nextInt(255),
+                        0.7,
+                      ),
+                    );
+                  },
+                )
+                // ..add(
+                //     BackdropFilter(
+                //       filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                //       child: Container(),
+                //     ),
+                //   )
+                ,
               ),
             ),
           ),
