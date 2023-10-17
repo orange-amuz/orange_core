@@ -6,6 +6,7 @@ import 'package:example/pages/container_animation_test_page/container_animation_
 import 'package:example/pages/dice_animation_test_page/dice_animation_test_page.dart';
 import 'package:example/pages/hover_animation_test_page/hover_animation_test_page.dart';
 import 'package:example/pages/lottie_animation_test_page/lottie_animation_test_page.dart';
+import 'package:example/pages/meta_ball_test_page/meta_ball_test_page.dart';
 import 'package:example/pages/music_player_animation_test_page/music_player_animation_test_page.dart';
 import 'package:example/pages/nico_music_player_animation_test_page/nico_music_player_animation_test_page.dart';
 import 'package:example/pages/square_animation_test_page/square_animation_test_page.dart';
@@ -317,6 +318,19 @@ class _MyHomePageState extends State<MyHomePage>
               context,
               MaterialPageRoute(
                 builder: (_) => const LottieAnimationTestPage(),
+              ),
+            );
+          },
+        ),
+        CupertinoButton(
+          child: const Text(
+            'Go To Meta Ball Test Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const MetaBallTestPage(),
               ),
             );
           },
