@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-class RotateAnimationWidget extends StatefulWidget {
+class RotateAnimationWidget extends StatelessWidget {
   const RotateAnimationWidget({
     Key? key,
     this.boxWidth = 200,
@@ -10,7 +10,6 @@ class RotateAnimationWidget extends StatefulWidget {
     this.animationCurve = Curves.easeInOut,
     this.animationDuration = const Duration(milliseconds: 1000),
     required this.y,
-    // required this.animationController,
     required this.animationValue,
     required this.child,
   }) : super(key: key);
@@ -22,7 +21,6 @@ class RotateAnimationWidget extends StatefulWidget {
   final Duration animationDuration;
 
   final double y;
-  // final AnimationController animationController;
   final double animationValue;
   final Widget child;
 
@@ -30,36 +28,13 @@ class RotateAnimationWidget extends StatefulWidget {
   static const double zAngle = math.pi / 4;
 
   @override
-  State<RotateAnimationWidget> createState() => _RotateAnimationWidget();
-}
-
-class _RotateAnimationWidget extends State<RotateAnimationWidget> {
-  @override
-  void initState() {
-    super.initState();
-
-    // widget.animationController.addListener(listener);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    // widget.animationController.removeListener(listener);
-  }
-
-  void listener() {
-    setState(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Transform.translate(
       offset: Offset(
         0.0,
-        Tween(begin: 0.0, end: widget.y)
-            .chain(CurveTween(curve: widget.animationCurve))
-            .transform(widget.animationValue)
+        Tween(begin: 0.0, end: y)
+            .chain(CurveTween(curve: animationCurve))
+            .transform(animationValue)
             .toDouble(),
       ),
       child: Transform(
@@ -69,8 +44,8 @@ class _RotateAnimationWidget extends State<RotateAnimationWidget> {
               begin: 0.0,
               end: RotateAnimationWidget.xAngle,
             )
-                .chain(CurveTween(curve: widget.animationCurve))
-                .transform(widget.animationValue)
+                .chain(CurveTween(curve: animationCurve))
+                .transform(animationValue)
                 .toDouble(),
           )
           ..rotateZ(
@@ -78,20 +53,20 @@ class _RotateAnimationWidget extends State<RotateAnimationWidget> {
               begin: 0.0,
               end: RotateAnimationWidget.zAngle,
             )
-                .chain(CurveTween(curve: widget.animationCurve))
-                .transform(widget.animationValue)
+                .chain(CurveTween(curve: animationCurve))
+                .transform(animationValue)
                 .toDouble(),
           )
           ..translate(
             Tween(
               begin: 0.0,
-              end: widget.boxWidth * math.cos(RotateAnimationWidget.zAngle),
+              end: boxWidth * math.cos(RotateAnimationWidget.zAngle),
             )
-                .chain(CurveTween(curve: widget.animationCurve))
-                .transform(widget.animationValue)
+                .chain(CurveTween(curve: animationCurve))
+                .transform(animationValue)
                 .toDouble(),
           ),
-        child: widget.child,
+        child: child,
       ),
     );
   }

@@ -69,195 +69,175 @@ class _HoverAnimationTestPage extends State<HoverAnimationTestPage>
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Hover Animation Test Page'),
       ),
-      backgroundColor: ColorTween(
-        begin: Colors.white,
-        end: Colors.black87,
-      )
-          .chain(CurveTween(curve: animationCurve))
-          .evaluate(backgroundAnimationController),
-      body: SafeArea(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            alignment: Alignment.bottomCenter,
-            padding: const EdgeInsets.only(
-              bottom: 100,
-            ),
-            child: SizedBox(
-              width: boxWidth,
-              height: boxHeight,
-              child: Stack(
-                children: [
-                  _buildTextLayer(),
-                  _buildPaddingLayer(),
-                  _buildBorderLayer(),
-                  _buildBaseLayer(),
-                  _buildShadowLayer(),
-                ].reversed.toList(),
+      body: AnimatedBuilder(
+        animation: backgroundAnimationController,
+        builder: (_, child) {
+          final value = backgroundAnimationController.value;
+
+          return Container(
+            color: ColorTween(
+              begin: Colors.white,
+              end: Colors.black87,
+            ).chain(CurveTween(curve: animationCurve)).transform(value),
+            child: SafeArea(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  alignment: Alignment.bottomCenter,
+                  padding: const EdgeInsets.only(
+                    bottom: 100,
+                  ),
+                  child: SizedBox(
+                    width: boxWidth,
+                    height: boxHeight,
+                    child: Stack(
+                      children: [
+                        _buildTextLayer(),
+                        _buildPaddingLayer(),
+                        _buildBorderLayer(),
+                        _buildBaseLayer(),
+                        _buildShadowLayer(),
+                      ].reversed.toList(),
+                    ),
+                  ),
+                ),
+                onTap: () {
+                  if (didAnimate) {
+                    animateReverse();
+                  } else {
+                    animateForward();
+                  }
+                },
               ),
             ),
-          ),
-          onTap: () {
-            if (didAnimate) {
-              animateReverse();
-            } else {
-              animateForward();
-            }
-          },
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildTextLayer() {
-    return AnimatedBuilder(
-      animation: backgroundAnimationController,
-      builder: (_, child) {
-        final double value =
-            (backgroundAnimationController.value.clamp(0, limitValue) *
-                1 /
-                limitValue);
+    final double value =
+        (backgroundAnimationController.value.clamp(0, limitValue) *
+            1 /
+            limitValue);
 
-        return RotateAnimationWidget(
-          y: -300,
-          animationValue: value,
-          child: Container(
-            width: boxWidth,
-            height: boxHeight,
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
-                color: ColorTween(
-                  begin: Colors.transparent,
-                  end: Colors.grey,
-                ).chain(CurveTween(curve: animationCurve)).transform(value)!,
-              ),
-            ),
-            padding: const EdgeInsets.all(30),
-            child: Text(
-              'My Name is ...',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: ColorTween(
-                  begin: Colors.black,
-                  end: Colors.grey,
-                ).chain(CurveTween(curve: animationCurve)).transform(value)!,
-              ),
-            ),
+    return RotateAnimationWidget(
+      y: -300,
+      animationValue: value,
+      child: Container(
+        width: boxWidth,
+        height: boxHeight,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 1,
+            color: ColorTween(
+              begin: Colors.transparent,
+              end: Colors.grey,
+            ).chain(CurveTween(curve: animationCurve)).transform(value)!,
           ),
-        );
-      },
+        ),
+        padding: const EdgeInsets.all(30),
+        child: Text(
+          'My Name is ...',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: ColorTween(
+              begin: Colors.black,
+              end: Colors.grey,
+            ).chain(CurveTween(curve: animationCurve)).transform(value)!,
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildPaddingLayer() {
-    return AnimatedBuilder(
-      animation: backgroundAnimationController,
-      builder: (_, child) {
-        final double value =
-            (backgroundAnimationController.value - intervalValue)
-                    .clamp(0, limitValue) *
-                1 /
-                limitValue;
+    final double value = (backgroundAnimationController.value - intervalValue)
+            .clamp(0, limitValue) *
+        1 /
+        limitValue;
 
-        return RotateAnimationWidget(
-          y: -225,
-          // animationController: animationControllers.elementAt(1),
-          animationValue: value,
-          child: Container(
-            width: boxWidth,
-            height: boxHeight,
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 30,
-                color: ColorTween(begin: Colors.transparent, end: Colors.cyan)
-                    .chain(CurveTween(curve: animationCurve))
-                    .transform(value)!,
-              ),
-            ),
+    return RotateAnimationWidget(
+      y: -225,
+      animationValue: value,
+      child: Container(
+        width: boxWidth,
+        height: boxHeight,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 30,
+            color: ColorTween(begin: Colors.transparent, end: Colors.cyan)
+                .chain(CurveTween(curve: animationCurve))
+                .transform(value)!,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   Widget _buildBorderLayer() {
-    return AnimatedBuilder(
-      animation: backgroundAnimationController,
-      builder: (_, child) {
-        final double value =
-            (backgroundAnimationController.value - intervalValue * 2)
-                    .clamp(0, limitValue) *
-                1 /
-                limitValue;
+    final double value =
+        (backgroundAnimationController.value - intervalValue * 2)
+                .clamp(0, limitValue) *
+            1 /
+            limitValue;
 
-        return RotateAnimationWidget(
-          y: -150,
-          animationValue: value,
-          child: Container(
-            width: boxWidth,
-            height: boxHeight,
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 2,
-                color: Colors.pink,
-              ),
-            ),
+    return RotateAnimationWidget(
+      y: -150,
+      animationValue: value,
+      child: Container(
+        width: boxWidth,
+        height: boxHeight,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 2,
+            color: Colors.pink,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   Widget _buildBaseLayer() {
-    return AnimatedBuilder(
-      animation: backgroundAnimationController,
-      builder: (_, child) {
-        final double value =
-            (backgroundAnimationController.value - intervalValue * 3)
-                    .clamp(0, limitValue) *
-                1 /
-                limitValue;
+    final double value =
+        (backgroundAnimationController.value - intervalValue * 3)
+                .clamp(0, limitValue) *
+            1 /
+            limitValue;
 
-        return RotateAnimationWidget(
-          y: -75,
-          animationValue: value,
-          child: Container(
-            color: Colors.white,
-          ),
-        );
-      },
+    return RotateAnimationWidget(
+      y: -75,
+      animationValue: value,
+      child: Container(
+        color: Colors.white,
+      ),
     );
   }
 
   Widget _buildShadowLayer() {
-    return AnimatedBuilder(
-      animation: backgroundAnimationController,
-      builder: (_, child) {
-        final double value =
-            (backgroundAnimationController.value - intervalValue * 4)
-                    .clamp(0, limitValue) *
-                1 /
-                limitValue;
+    final double value =
+        (backgroundAnimationController.value - intervalValue * 4)
+                .clamp(0, limitValue) *
+            1 /
+            limitValue;
 
-        return RotateAnimationWidget(
-          y: 0,
-          animationValue: value,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              boxShadow: [
-                BoxShadow(
-                  offset: const Offset(0, 0),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                  color: Colors.grey.withOpacity(0.4),
-                ),
-              ],
+    return RotateAnimationWidget(
+      y: 0,
+      animationValue: value,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          boxShadow: [
+            BoxShadow(
+              offset: const Offset(0, 0),
+              blurRadius: 20,
+              spreadRadius: 2,
+              color: Colors.grey.withOpacity(0.4),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
