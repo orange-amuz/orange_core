@@ -120,7 +120,7 @@ class _DetailPageState extends State<DetailPage> {
                   color: Colors.cyan,
                   child: FittedBox(
                     fit: logoFit,
-                    child: FlutterLogo(),
+                    child: const FlutterLogo(),
                   ),
                 ),
               ),
