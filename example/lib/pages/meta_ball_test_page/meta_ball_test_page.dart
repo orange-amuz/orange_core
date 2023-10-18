@@ -1,6 +1,8 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:example/pages/meta_ball_test_page/meta_ball.dart';
+import 'package:example/pages/meta_ball_test_page/meta_ball_bloc.dart';
 import 'package:flutter/material.dart';
 
 class MetaBallTestPage extends StatefulWidget {
@@ -12,13 +14,37 @@ class MetaBallTestPage extends StatefulWidget {
 
 class _MetaBallTestPageState extends State<MetaBallTestPage>
     with SingleTickerProviderStateMixin {
+  static const int blobNumber = 50;
+
   late final AnimationController animationController;
+
+  final bloc = MetaBallBloc();
 
   final rnd = math.Random();
 
   @override
   void initState() {
     super.initState();
+
+    for (int i = 0; i < blobNumber; i++) {
+      bloc.metaBallDataList.add(
+        MetaBallData(
+          constraints: const BoxConstraints(),
+          size: rnd.nextInt(120) + 20,
+          velocity: rnd.nextDouble() * 4 + 1,
+          color: Color.fromRGBO(255, rnd.nextInt(255), rnd.nextInt(255), 0.75),
+        )
+          ..updateOffset(
+            Offset.zero,
+          )
+          ..updateDirection(
+            Offset(
+              rnd.nextDouble() * 15,
+              rnd.nextDouble() * 15,
+            ),
+          ),
+      );
+    }
 
     animationController = AnimationController(
       vsync: this,
@@ -32,141 +58,258 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
   void dispose() {
     animationController.dispose();
 
+    bloc.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTapDown: (details) {
-            animationController.stop();
-          },
-          onTapUp: (details) {
-            animationController.repeat();
-          },
-          child: Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                border: Border.all(),
-              ),
-              child: Stack(
-                children: List.generate(
-                  500,
-                  (index) {
-                    return _buildBlob(
-                      blobSize: rnd.nextInt(45).toDouble() + 5,
-                      blobDirection: Offset(
-                        rnd.nextInt(9).toDouble() + 1.6,
-                        rnd.nextInt(9).toDouble() + 1.2,
-                      ),
-                      velocity: rnd.nextInt(2).toDouble() + 1,
-                      color: Color.fromRGBO(
-                        // rnd.nextInt(255),
-                        255,
-                        rnd.nextInt(255),
-                        rnd.nextInt(255),
-                        0.7,
-                      ),
+      body: LayoutBuilder(
+        builder: (_, constraints) {
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTapDown: (details) {
+              animationController.stop();
+            },
+            onTapUp: (details) {
+              animationController.repeat();
+            },
+            child: Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                ),
+                child: AnimatedBuilder(
+                  animation: animationController,
+                  builder: (_, child) {
+                    // updateData(
+                    //   constraints,
+                    // );
+
+                    return Stack(
+                      children: List.generate(
+                        blobNumber,
+                        (index) => _buildBlob(
+                          constraints: constraints,
+                          metaBallData: bloc.metaBallDataList.elementAt(index),
+                        ),
+                      )
+                      // ..add(
+                      //     BackdropFilter(
+                      //       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      //       child: Container(),
+                      //     ),
+                      //   )
+                      ,
                     );
                   },
-                )
-                // ..add(
-                //     BackdropFilter(
-                //       filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                //       child: Container(),
-                //     ),
-                //   )
-                ,
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildBlob({
-    double blobSize = 20,
-    required Offset blobDirection,
-    required double velocity,
-    Color color = Colors.cyan,
+    required BoxConstraints constraints,
+    required MetaBallData metaBallData,
   }) {
-    return LayoutBuilder(
-      builder: (_, constraints) {
-        constraints = BoxConstraints(
-          maxWidth: constraints.maxWidth - blobSize,
-          maxHeight: constraints.maxHeight - blobSize,
-        );
+    metaBallData.constraints = BoxConstraints(
+      maxWidth: constraints.maxWidth - metaBallData.size,
+      maxHeight: constraints.maxHeight - metaBallData.size,
+    );
 
-        Offset offset = Offset(
-          constraints.maxWidth / 2,
-          constraints.maxHeight / 2,
-        );
+    final distance = math.sqrt(
+      math.pow(metaBallData.direction.dx, 2) +
+          math.pow(metaBallData.direction.dy, 2),
+    );
 
-        return AnimatedBuilder(
-          animation: animationController,
-          builder: (_, child) {
-            final distance = math.sqrt(
-              math.pow(blobDirection.dx, 2) + math.pow(blobDirection.dy, 2),
-            );
+    Offset delta = Offset(
+      metaBallData.direction.dx / distance * metaBallData.velocity,
+      metaBallData.direction.dy / distance * metaBallData.velocity,
+    );
 
-            Offset delta = Offset(
-              blobDirection.dx / distance * velocity,
-              blobDirection.dy / distance * velocity,
-            );
+    if ((metaBallData.offset.dx + delta.dx) >
+        metaBallData.constraints.maxWidth) {
+      metaBallData.updateOffset(
+        Offset(
+          2 * metaBallData.constraints.maxWidth -
+              (metaBallData.offset.dx + delta.dx),
+          metaBallData.offset.dy + delta.dy,
+        ),
+      );
 
-            if ((offset.dx + delta.dx) > constraints.maxWidth) {
-              offset = Offset(
-                2 * constraints.maxWidth - (offset.dx + delta.dx),
-                offset.dy + delta.dy,
-              );
+      metaBallData.updateDirection(
+        Offset(
+          -metaBallData.direction.dx,
+          metaBallData.direction.dy,
+        ),
+      );
+    } else if (metaBallData.offset.dx + delta.dx < 0) {
+      metaBallData.updateOffset(
+        Offset(
+          -(metaBallData.offset.dx + delta.dx),
+          metaBallData.offset.dy + delta.dy,
+        ),
+      );
 
-              blobDirection = Offset(-blobDirection.dx, blobDirection.dy);
-            } else if (offset.dx + delta.dx < 0) {
-              offset = Offset(
-                -(offset.dx + delta.dx),
-                offset.dy + delta.dy,
-              );
+      metaBallData.updateDirection(
+        Offset(
+          -metaBallData.direction.dx,
+          metaBallData.direction.dy,
+        ),
+      );
+    } else {
+      metaBallData.updateOffset(
+        Offset(
+          metaBallData.offset.dx + delta.dx,
+          metaBallData.offset.dy + delta.dy,
+        ),
+      );
+    }
 
-              blobDirection = Offset(-blobDirection.dx, blobDirection.dy);
-            } else {
-              offset = Offset(
-                offset.dx + delta.dx,
-                offset.dy + delta.dy,
-              );
-            }
+    if (metaBallData.offset.dy + delta.dy >
+        metaBallData.constraints.maxHeight) {
+      metaBallData.updateOffset(
+        Offset(
+          metaBallData.offset.dx,
+          2 * metaBallData.constraints.maxHeight -
+              (metaBallData.offset.dy + delta.dy),
+        ),
+      );
 
-            if (offset.dy + delta.dy > constraints.maxHeight) {
-              offset = Offset(
-                offset.dx,
-                2 * constraints.maxHeight - offset.dy,
-              );
+      metaBallData.updateDirection(
+        Offset(
+          metaBallData.direction.dx,
+          -metaBallData.direction.dy,
+        ),
+      );
+    } else if (metaBallData.offset.dy + delta.dy < 0) {
+      metaBallData.updateOffset(
+        Offset(
+          metaBallData.offset.dx,
+          -metaBallData.offset.dy,
+        ),
+      );
 
-              blobDirection = Offset(blobDirection.dx, -blobDirection.dy);
-            } else if (offset.dy + delta.dy < 0) {
-              offset = Offset(
-                offset.dx,
-                -offset.dy,
-              );
+      metaBallData.updateDirection(
+        Offset(
+          metaBallData.direction.dx,
+          -metaBallData.direction.dy,
+        ),
+      );
+    }
 
-              blobDirection = Offset(blobDirection.dx, -blobDirection.dy);
-            }
+    metaBallData.updateOffset(Offset(
+      metaBallData.offset.dx,
+      metaBallData.offset.dy,
+    ));
 
-            return MetaBall(
-              offset: offset,
-              blobSize: blobSize,
-              color: color,
-            );
-          },
-        );
-      },
+    return MetaBall(
+      offset: metaBallData.offset,
+      blobSize: metaBallData.size,
+      color: metaBallData.color,
     );
   }
+
+  // void updateData(BoxConstraints constraints) {
+  //   for (MetaBallData metaBallData in bloc.metaBallDataList) {
+  //     metaBallData.constraints = BoxConstraints(
+  //       maxWidth: constraints.maxWidth - metaBallData.size,
+  //       maxHeight: constraints.maxHeight - metaBallData.size,
+  //     );
+
+  //     final distance = math.sqrt(
+  //       math.pow(metaBallData.direction.dx, 2) +
+  //           math.pow(metaBallData.direction.dy, 2),
+  //     );
+
+  //     Offset delta = Offset(
+  //       metaBallData.direction.dx / distance * metaBallData.velocity,
+  //       metaBallData.direction.dy / distance * metaBallData.velocity,
+  //     );
+
+  //     if ((metaBallData.offset.dx + delta.dx) >
+  //         metaBallData.constraints.maxWidth) {
+  //       metaBallData.updateOffset(
+  //         Offset(
+  //           2 * metaBallData.constraints.maxWidth -
+  //               (metaBallData.offset.dx + delta.dx),
+  //           metaBallData.offset.dy + delta.dy,
+  //         ),
+  //       );
+
+  //       metaBallData.updateDirection(
+  //         Offset(
+  //           -metaBallData.direction.dx,
+  //           metaBallData.direction.dy,
+  //         ),
+  //       );
+  //     } else if (metaBallData.offset.dx + delta.dx < 0) {
+  //       metaBallData.updateOffset(
+  //         Offset(
+  //           -(metaBallData.offset.dx + delta.dx),
+  //           metaBallData.offset.dy + delta.dy,
+  //         ),
+  //       );
+
+  //       metaBallData.updateDirection(
+  //         Offset(
+  //           -metaBallData.direction.dx,
+  //           metaBallData.direction.dy,
+  //         ),
+  //       );
+  //     } else {
+  //       metaBallData.updateOffset(
+  //         Offset(
+  //           metaBallData.offset.dx + delta.dx,
+  //           metaBallData.offset.dy + delta.dy,
+  //         ),
+  //       );
+  //     }
+
+  //     if (metaBallData.offset.dy + delta.dy >
+  //         metaBallData.constraints.maxHeight) {
+  //       metaBallData.updateOffset(
+  //         Offset(
+  //           metaBallData.offset.dx,
+  //           2 * metaBallData.constraints.maxHeight -
+  //               (metaBallData.offset.dy + delta.dy),
+  //         ),
+  //       );
+
+  //       metaBallData.updateDirection(
+  //         Offset(
+  //           metaBallData.direction.dx,
+  //           -metaBallData.direction.dy,
+  //         ),
+  //       );
+  //     } else if (metaBallData.offset.dy + delta.dy < 0) {
+  //       metaBallData.updateOffset(
+  //         Offset(
+  //           metaBallData.offset.dx,
+  //           -metaBallData.offset.dy,
+  //         ),
+  //       );
+
+  //       metaBallData.updateDirection(
+  //         Offset(
+  //           metaBallData.direction.dx,
+  //           -metaBallData.direction.dy,
+  //         ),
+  //       );
+  //     }
+
+  //     metaBallData.updateOffset(Offset(
+  //       metaBallData.offset.dx,
+  //       metaBallData.offset.dy,
+  //     ));
+  //   }
+  // }
 }
