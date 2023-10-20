@@ -5,7 +5,9 @@ import 'package:example/pages/meta_ball_test_page/meta_ball_bloc.dart';
 import 'package:flutter/material.dart';
 
 class MetaBallTestPage extends StatefulWidget {
-  const MetaBallTestPage({super.key});
+  const MetaBallTestPage({
+    super.key,
+  });
 
   @override
   State<MetaBallTestPage> createState() => _MetaBallTestPageState();
@@ -13,7 +15,7 @@ class MetaBallTestPage extends StatefulWidget {
 
 class _MetaBallTestPageState extends State<MetaBallTestPage>
     with SingleTickerProviderStateMixin {
-  static const int blobNumber = 100;
+  static const int blobNumber = 40;
 
   late final AnimationController animationController;
 
@@ -29,9 +31,14 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
       bloc.metaBallDataList.add(
         MetaBallData(
           constraints: const BoxConstraints(),
-          size: rnd.nextInt(120) + 20,
-          velocity: rnd.nextDouble() * 2 + 1,
-          color: Color.fromRGBO(255, rnd.nextInt(255), rnd.nextInt(255), 0.75),
+          size: rnd.nextInt(80) + 30,
+          velocity: rnd.nextDouble() * 1.4 + 0.1,
+          color: Color.fromRGBO(
+            rnd.nextInt(255),
+            rnd.nextInt(255),
+            191,
+            0.75,
+          ),
         )
           ..updateOffset(
             Offset.zero,
@@ -65,6 +72,7 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: LayoutBuilder(
         builder: (_, constraints) {
           return GestureDetector(
@@ -109,6 +117,23 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
   }
 
   Widget _buildBlob({
+    required BoxConstraints constraints,
+    required MetaBallData metaBallData,
+  }) {
+    _updateMetaBallData(
+      constraints: constraints,
+      metaBallData: metaBallData,
+    );
+
+    return MetaBall(
+      offset: metaBallData.offset,
+      blobSize: metaBallData.size,
+      // color: HSVColor.fromAHSV(1.0, 1.0, 0.3, 1.0).toColor(),
+      color: metaBallData.color,
+    );
+  }
+
+  void _updateMetaBallData({
     required BoxConstraints constraints,
     required MetaBallData metaBallData,
   }) {
@@ -202,11 +227,5 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
       metaBallData.offset.dx,
       metaBallData.offset.dy,
     ));
-
-    return MetaBall(
-      offset: metaBallData.offset,
-      blobSize: metaBallData.size,
-      color: metaBallData.color,
-    );
   }
 }
