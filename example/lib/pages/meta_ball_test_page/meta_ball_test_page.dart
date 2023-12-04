@@ -15,7 +15,7 @@ class MetaBallTestPage extends StatefulWidget {
 
 class _MetaBallTestPageState extends State<MetaBallTestPage>
     with SingleTickerProviderStateMixin {
-  static const int blobNumber = 40;
+  static const int blobNumber = 100;
 
   late final AnimationController animationController;
 
@@ -72,7 +72,7 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      // backgroundColor: Colors.black,
       body: LayoutBuilder(
         builder: (_, constraints) {
           return GestureDetector(

@@ -1,3 +1,4 @@
+import 'package:example/global_bloc.dart';
 import 'package:example/pages/app_bar_animation_test_page/app_bar_animation_test_page.dart';
 import 'package:example/pages/apple_watch_animation_test_page/apple_watch_animation_test_page.dart';
 import 'package:example/pages/arrow_animation_test_page/arrow_animation_test_page.dart';
@@ -10,6 +11,7 @@ import 'package:example/pages/meta_ball_test_page/meta_ball_test_page.dart';
 import 'package:example/pages/music_player_animation_test_page/music_player_animation_test_page.dart';
 import 'package:example/pages/nico_music_player_animation_test_page/nico_music_player_animation_test_page.dart';
 import 'package:example/pages/square_animation_test_page/square_animation_test_page.dart';
+import 'package:example/pages/state_test_page/state_test_page.dart';
 import 'package:example/pages/swing_animation_test_page/swing_animation_test_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +83,8 @@ class _MyHomePageState extends State<MyHomePage>
     lottieController.dispose();
 
     super.dispose();
+
+    GlobalBloc.instance.dispose();
   }
 
   @override
@@ -95,6 +99,14 @@ class _MyHomePageState extends State<MyHomePage>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              StreamBuilder(
+                stream: GlobalBloc.instance.textSize,
+                builder: (_, textSizeSnapshot) {
+                  return Text(
+                    '${textSizeSnapshot.data ?? 10}',
+                  );
+                },
+              ),
               _buildScaleButton(),
               const Divider(),
               _buildListButton(),
@@ -166,6 +178,19 @@ class _MyHomePageState extends State<MyHomePage>
   Widget _buildTestPages() {
     return Column(
       children: [
+        CupertinoButton(
+          child: const Text(
+            'Go To State Test Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const StateTestPage(),
+              ),
+            );
+          },
+        ),
         CupertinoButton(
           child: const Text(
             'Go To Hover Animation Page',
