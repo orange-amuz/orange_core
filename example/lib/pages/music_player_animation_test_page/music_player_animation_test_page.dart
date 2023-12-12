@@ -70,6 +70,8 @@ class _MusicPlayerAnimationTestPageState
 
   MusicPlayerState musicPlayerState = MusicPlayerState.contracted;
 
+  final _isPlaying = BehaviorSubject.seeded(false);
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +98,8 @@ class _MusicPlayerAnimationTestPageState
     _albumPadding.close();
 
     _bottomSheetHeight.close();
+
+    _isPlaying.close();
   }
 
   @override
@@ -541,12 +545,29 @@ class _MusicPlayerAnimationTestPageState
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: const Icon(
-                  Icons.play_arrow,
-                  size: 28,
-                  color: Colors.white,
+                icon: StreamBuilder(
+                  stream: _isPlaying.stream,
+                  builder: (_, isPlayingSnapshot) {
+                    final isPlaying = isPlayingSnapshot.data ?? false;
+
+                    if (isPlaying) {
+                      return const Icon(
+                        Icons.pause,
+                        size: 28,
+                        color: Colors.white,
+                      );
+                    } else {
+                      return const Icon(
+                        Icons.play_arrow,
+                        size: 28,
+                        color: Colors.white,
+                      );
+                    }
+                  },
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  _isPlaying.sink.add(!_isPlaying.value);
+                },
               ),
               IconButton(
                 icon: const Icon(
@@ -709,12 +730,29 @@ class _MusicPlayerAnimationTestPageState
                 onPressed: () {},
               ),
               IconButton(
-                icon: const Icon(
-                  Icons.play_arrow,
-                  size: 40,
-                  color: Colors.white,
+                icon: StreamBuilder(
+                  stream: _isPlaying.stream,
+                  builder: (_, isPlayingSnapshot) {
+                    final isPlaying = isPlayingSnapshot.data ?? false;
+
+                    if (isPlaying) {
+                      return const Icon(
+                        Icons.pause,
+                        size: 40,
+                        color: Colors.white,
+                      );
+                    } else {
+                      return const Icon(
+                        Icons.play_arrow,
+                        size: 40,
+                        color: Colors.white,
+                      );
+                    }
+                  },
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  _isPlaying.sink.add(!_isPlaying.value);
+                },
               ),
               IconButton(
                 icon: const Icon(
@@ -744,45 +782,44 @@ class _MusicPlayerAnimationTestPageState
   void updateValue(
     double targetHeight,
   ) {
+    final playerHeightRatio = (targetHeight - togglePlayerHeight) /
+        (maxPlayerHeight - togglePlayerHeight);
+
     _backgroundOpacity.sink.add(
-      ((targetHeight - togglePlayerHeight) /
-              (maxPlayerHeight - togglePlayerHeight))
-          .clamp(0.0, 1.0),
+      playerHeightRatio.clamp(0.0, 1.0),
     );
 
+    final currentPlayerHeightRatio = (targetHeight - minPlayerHeight) /
+        (togglePlayerHeight - minPlayerHeight);
+
     _appearOpacity.sink.add(
-      (1 -
-              ((targetHeight - minPlayerHeight) /
-                  (togglePlayerHeight - minPlayerHeight)))
-          .clamp(0.0, 1.0),
+      (1 - currentPlayerHeightRatio).clamp(0.0, 1.0),
     );
 
     _topPadding.sink.add(
       math.max(
-        (targetHeight - minPlayerHeight) /
-                (maxPlayerHeight - minPlayerHeight) *
+        currentPlayerHeightRatio *
                 (56 + 10 + 10 + MediaQuery.of(context).padding.top) +
             7.5,
         7.5,
       ),
     );
 
-    _albumSize.sink.add(((targetHeight - minPlayerHeight) /
-                (maxPlayerHeight - minPlayerHeight) *
-                (maxAlbumImageSize - minAlbumImageSize) +
-            minAlbumImageSize)
-        .clamp(
-      minAlbumImageSize,
-      maxAlbumImageSize,
-    ));
+    _albumSize.sink.add(
+      (currentPlayerHeightRatio * (maxAlbumImageSize - minAlbumImageSize) +
+              minAlbumImageSize)
+          .clamp(
+        minAlbumImageSize,
+        maxAlbumImageSize,
+      ),
+    );
 
-    _albumPadding.sink.add(((targetHeight - minPlayerHeight) /
-            (maxPlayerHeight - minPlayerHeight) *
-            maxAlbumPaddingSize)
-        .clamp(
-      0.0,
-      maxAlbumPaddingSize,
-    ));
+    _albumPadding.sink.add(
+      (currentPlayerHeightRatio * maxAlbumPaddingSize).clamp(
+        0.0,
+        maxAlbumPaddingSize,
+      ),
+    );
   }
 
   //----------------------------------------------------------------------------
