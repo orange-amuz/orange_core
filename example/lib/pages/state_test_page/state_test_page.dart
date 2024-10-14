@@ -29,6 +29,10 @@ class _StateTestPageState extends State<StateTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('State Test Page'),
+      ),
       body: SafeArea(
         child: Column(
           children: [

@@ -73,6 +73,10 @@ class _MetaBallTestPageState extends State<MetaBallTestPage>
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Metaball Test Page'),
+      ),
       body: LayoutBuilder(
         builder: (_, constraints) {
           return GestureDetector(

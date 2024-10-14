@@ -143,7 +143,6 @@ class _NicoMusicPlayerAnimationTestPageState
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.black.withOpacity(0),
       ),
       body: Stack(

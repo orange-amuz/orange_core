@@ -44,6 +44,10 @@ class _SquareAnimationTestPageState extends State<SquareAnimationTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Square Animation Test Page'),
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (_, constraints) {

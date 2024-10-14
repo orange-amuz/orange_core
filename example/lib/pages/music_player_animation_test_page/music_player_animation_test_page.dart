@@ -108,6 +108,15 @@ class _MusicPlayerAnimationTestPageState
       body: Stack(
         children: [
           Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              title: const Text('Music Player Animation Test Page'),
+            ),
+          ),
+          Positioned(
             bottom: 0,
             left: 0,
             right: 0,

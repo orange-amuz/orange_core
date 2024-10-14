@@ -84,7 +84,10 @@ class _SwingAnimationTestPageState extends State<SwingAnimationTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Swing Animation Test Page'),
+      ),
       body: AnimatedBuilder(
         animation: _position,
         builder: (_, child) {

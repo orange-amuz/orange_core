@@ -47,7 +47,10 @@ class _ArrowAnimationTestPageState extends State<ArrowAnimationTestPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Arrow Animation Test Page'),
+      ),
       body: SafeArea(
         child: Center(
           child: Container(

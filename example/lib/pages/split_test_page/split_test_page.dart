@@ -2,7 +2,9 @@ import 'package:example/pages/split_test_page/split_test_bloc.dart';
 import 'package:flutter/material.dart';
 
 class SplitTestPage extends StatefulWidget {
-  const SplitTestPage({super.key});
+  const SplitTestPage({
+    super.key,
+  });
 
   @override
   State<SplitTestPage> createState() => _SplitTestPageState();
@@ -28,6 +30,10 @@ class _SplitTestPageState extends State<SplitTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Split Test Page'),
+      ),
       body: StreamBuilder(
         stream: bloc.flag,
         builder: (_, __) {
@@ -110,7 +116,9 @@ class _SplitTestPageState extends State<SplitTestPage> {
                   borderRadius: BorderRadius.circular(
                     circle.diameter,
                   ),
-                  border: Border.all(color: Colors.black),
+                  border: Border.all(
+                    color: Colors.black,
+                  ),
                   color: Colors.red,
                 ),
                 child: GestureDetector(
