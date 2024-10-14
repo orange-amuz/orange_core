@@ -178,7 +178,7 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
                   fontWeight: isMin ? FontWeight.normal : FontWeight.w900,
                   letterSpacing: 0,
                 ),
-                textScaleFactor: 1,
+                textScaler: TextScaler.noScaling,
               ),
               SizedBox(
                 width: double.infinity,
@@ -213,7 +213,7 @@ class _AppBarAnimationTestPageState extends State<AppBarAnimationTestPage>
                                     fontSize: 12,
                                     height: 1.2,
                                   ),
-                                  textScaleFactor: 1,
+                                  textScaler: TextScaler.noScaling,
                                 ),
                                 Icon(
                                   Icons.arrow_forward_ios,

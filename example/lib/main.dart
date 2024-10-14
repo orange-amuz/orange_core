@@ -10,6 +10,7 @@ import 'package:example/pages/lottie_animation_test_page/lottie_animation_test_p
 import 'package:example/pages/meta_ball_test_page/meta_ball_test_page.dart';
 import 'package:example/pages/music_player_animation_test_page/music_player_animation_test_page.dart';
 import 'package:example/pages/nico_music_player_animation_test_page/nico_music_player_animation_test_page.dart';
+import 'package:example/pages/split_test_page/split_test_page.dart';
 import 'package:example/pages/square_animation_test_page/square_animation_test_page.dart';
 import 'package:example/pages/state_test_page/state_test_page.dart';
 import 'package:example/pages/swing_animation_test_page/swing_animation_test_page.dart';
@@ -96,6 +97,9 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       body: Center(
         child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -356,6 +360,19 @@ class _MyHomePageState extends State<MyHomePage>
               context,
               MaterialPageRoute(
                 builder: (_) => const MetaBallTestPage(),
+              ),
+            );
+          },
+        ),
+        CupertinoButton(
+          child: const Text(
+            'Go To Split Test Page',
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SplitTestPage(),
               ),
             );
           },
