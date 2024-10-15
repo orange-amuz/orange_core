@@ -125,7 +125,12 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
 
     super.dispose();
 
+    for (final circle in circles) {
+      circle.dispose();
+    }
     circles.clear();
+
+    defaultCircle.dispose();
   }
 
   void updateScreen() {
