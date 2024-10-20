@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:trotter/trotter.dart';
@@ -92,10 +93,12 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
         defaultCircle = MovingCircleModel(
           constraints: const BoxConstraints(),
           center: const Offset(0, 0),
-          diameter: maxWidth,
           velocity: rnd.nextDouble() * 1.4 + 0.1,
         );
 
+        defaultCircle.updateDiameter(
+          maxWidth,
+        );
         defaultCircle.updatePosition(
           const Offset(0, 0),
         );
@@ -143,6 +146,19 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Moving Split Test Page'),
+        actions: [
+          CupertinoButton(
+            child: const Icon(
+              Icons.restore,
+            ),
+            onPressed: () {
+              circles.clear();
+              circles.add(defaultCircle);
+
+              updateScreen();
+            },
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (_, constraints) {
@@ -212,6 +228,15 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
     required BoxConstraints constraints,
     required MovingCircleModel circle,
   }) {
+    final diameter = circle.diameter;
+    final newDiameter = diameter * 1.0005;
+
+    if (newDiameter <= maxWidth) {
+      circle.updateDiameter(newDiameter);
+    } else {
+      circle.updateDiameter(maxWidth);
+    }
+
     circle.constraints = BoxConstraints(
       maxWidth: constraints.maxWidth - circle.diameter,
       maxHeight: constraints.maxHeight - circle.diameter,
@@ -333,12 +358,15 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
         (tappedOffset.dx + furthestOffset.dx) / 2,
         (tappedOffset.dy + furthestOffset.dy) / 2,
       ),
-      diameter: targetDiameter,
       velocity: tappedCircle.velocity,
       constraints: BoxConstraints(
         maxWidth: constraints.maxWidth - targetDiameter,
         maxHeight: constraints.maxHeight - targetDiameter,
       ),
+    );
+
+    result.updateDiameter(
+      targetDiameter,
     );
 
     result.updatePosition(
@@ -384,12 +412,15 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
         (tappedOffset.dx + furthestOffset.dx) / 2,
         (tappedOffset.dy + furthestOffset.dy) / 2,
       ),
-      diameter: targetDiameter,
       velocity: tappedCircle.velocity,
       constraints: BoxConstraints(
         maxWidth: constraints.maxWidth - targetDiameter,
         maxHeight: constraints.maxHeight - targetDiameter,
       ),
+    );
+
+    result.updateDiameter(
+      targetDiameter,
     );
 
     result.updatePosition(
@@ -531,8 +562,7 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
           center: centersP.elementAt(index),
           velocity: c1.velocity,
           constraints: c1.constraints,
-          diameter: newRadiusP * 2,
-        ),
+        )..updateDiameter(newRadiusP * 2),
       ),
       ...List.generate(
         centersN.length,
@@ -540,8 +570,7 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
           center: centersN.elementAt(index),
           velocity: c1.velocity,
           constraints: c1.constraints,
-          diameter: newRadiusN * 2,
-        ),
+        )..updateDiameter(newRadiusN * 2),
       ),
     ];
   }
@@ -600,7 +629,10 @@ class _MovingSplitTestPageState extends State<MovingSplitTestPage>
 
 class MovingCircleModel {
   final Offset center;
-  final double diameter;
+
+  final _diameter = ReplaySubject<double>(maxSize: 2);
+  double get diameter => _diameter.values.last;
+  void Function(double) get updateDiameter => _diameter.sink.add;
 
   final _position = ReplaySubject<Offset>(maxSize: 2);
   Stream<Offset> get positionStream => _position.stream;
@@ -619,7 +651,6 @@ class MovingCircleModel {
 
   MovingCircleModel({
     required this.center,
-    required this.diameter,
     required this.velocity,
     required this.constraints,
     this.color = const Color.fromRGBO(0xff, 0xa0, 0x00, 0.3),
