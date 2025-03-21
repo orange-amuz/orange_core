@@ -41,6 +41,7 @@ class OrangeListButton extends StatelessWidget {
           disabledElevation: 0,
           highlightElevation: 0,
           highlightColor: backgroundColor,
+          hoverColor: backgroundColor,
           splashColor: Colors.transparent,
           padding: padding,
           onPressed: onPressed,
